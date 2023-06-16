@@ -1,0 +1,23 @@
+{
+  "name": "project-forms",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0-development",
+  "description": "A web app for forms generated based on GitHub projects",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@netlify/functions": "^1.6.0",
+    "@octokit-next/core": "^2.7.0",
+    "@octokit-next/oauth-methods": "^2.7.0",
+    "@octokit-next/types-rest-api": "^2.7.0",
+    "@primer/octicons-react": "^19.1.0",
+    "@primer/react": "^35.25.1",
+    "github-project": "^3.3.4",
+    "netlify-cli": "^15.3.1"
+  }
+}
