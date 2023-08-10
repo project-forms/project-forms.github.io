@@ -383,7 +383,7 @@ function App() {
                           iterationToOption
                         ),
                         ...field.configuration.completedIterations.map(
-                          (iteration) => iterationToOption
+                          iterationToOption
                         ),
                       ]
                     : undefined,
@@ -573,9 +573,7 @@ function App() {
             size="large"
             leadingIcon={MarkGithubIcon}
             as="a"
-            href={`/api/github/oauth/login?redirectUrl=${encodeURIComponent(
-              location.href
-            )}`}
+            href={`/api/github/oauth/login?redirectUrl=${location.href}`}
           >
             Log In With GitHub
           </Button>
