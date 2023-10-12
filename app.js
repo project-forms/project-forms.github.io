@@ -123,6 +123,7 @@ function appStateReducer(state, { action, payload }) {
       pathIsValid: true,
       loading: false,
       parameters: payload.parameters,
+      message: payload.message,
       error: "requestError",
     };
   }
@@ -425,10 +426,14 @@ function App() {
           return store.set(projectData);
         })
         .catch((error) => {
+          const message = error.errors
+            ? error.errors[0].message
+            : error.message;
           dispatch({
             action: "requestError",
             payload: {
               parameters,
+              message,
             },
           });
         });
@@ -467,11 +472,12 @@ function App() {
 
   if ("error" in appState) {
     if (appState.error === "requestError") {
+      console.log({ error: appState.error });
       return (
         <Box m="4" justifyContent="center">
           <Heading sx={{ mb: 4 }}>Request Error</Heading>
           <Text>
-            Sorry, something went wrong. Please try again later.
+            {appState.message}
             <br />
             <br />
             If the problem persists, please let us know on{" "}

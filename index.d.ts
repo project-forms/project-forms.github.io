@@ -45,6 +45,7 @@ type AppStateActionRequestError = {
   action: "requestError";
   payload: {
     parameters: Parameters;
+    message: string;
   };
 };
 
@@ -123,6 +124,7 @@ type AppStateLoading = {
 type AppStateWithRequestError = AppStateValidPath & {
   name: "requestError";
   error: "requestError";
+  message: string;
 };
 type AppStateWithAccessError = AppStateValidPath & {
   name: "accessError";
