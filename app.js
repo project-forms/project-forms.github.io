@@ -8,6 +8,7 @@ import {
   Avatar,
   BaseStyles,
   Box,
+  Breadcrumbs,
   Button,
   FormControl,
   Header,
@@ -161,6 +162,27 @@ function initAppState(parameters) {
     parameters,
     isUnauthenticated: true,
   };
+}
+
+/**
+ * @param {object} options
+ * @param {import("react").ReactNode} options.children
+ * @param {import("@primer/react/lib-esm/sx").BetterSystemStyleObject} [options.sx]
+ * @returns
+ */
+export function ContentWrapper({ children, sx }) {
+  return (
+    <Box
+      sx={{
+        p: 4,
+        m: "0 auto",
+        maxWidth: "1280px",
+        ...sx,
+      }}
+    >
+      {children}
+    </Box>
+  );
 }
 
 function App() {
@@ -695,38 +717,51 @@ function App() {
           </Header.Item>
         )}
       </Header>
-
-      {submittedIssueUrl === null ? (
-        <Box m={4}>
-          <Heading sx={{ mb: 4 }}>
-            Submit an issue in{" "}
-            <Link href={`https://github.com/${owner}`}>{owner}</Link>/
-            <Link href={`https://github.com/project-forms/${repo}`}>
+      <Box
+        sx={{
+          bg: "canvas.inset",
+          borderBottom: "1px solid",
+          borderBottomColor: "border.default",
+        }}
+      >
+        <ContentWrapper>
+          <Breadcrumbs>
+            <Breadcrumbs.Item href={`https://github.com/${owner}`}>
+              {owner}
+            </Breadcrumbs.Item>
+            <Breadcrumbs.Item
+              href={`https://github.com/project-forms/${repo}`}
+              selected
+            >
               {repo}
-            </Link>{" "}
-            using fields from project{" "}
+            </Breadcrumbs.Item>
+          </Breadcrumbs>
+          <Heading sx={{ fontSize: 2 }}>
+            Submit for to project{" "}
             <Link href={appState.project.url}>
               #{projectNumber} {appState.project.name}
             </Link>
           </Heading>
+        </ContentWrapper>
+      </Box>
 
-          <Box display="grid" gridGap={3}>
+      {submittedIssueUrl === null ? (
+        <ContentWrapper>
+          <Heading sx={{ mb: 4 }}></Heading>
+
+          <Box sx={{ display: "grid", gridGap: 3 }}>
             <form
               onSubmit={(event) => handleSubmit(appState, authState, event)}
             >
               <FormControl required>
-                <FormControl.Label>Issue Title</FormControl.Label>
+                <FormControl.Label>Issue title</FormControl.Label>
                 <TextInput block name="title" />
               </FormControl>
 
-              <fieldset>
-                <legend>Project fields</legend>
-
-                {projectFields}
-              </fieldset>
+              {projectFields}
 
               <FormControl>
-                <FormControl.Label>Issue body</FormControl.Label>
+                <FormControl.Label>Issue description</FormControl.Label>
                 <Textarea block name="body"></Textarea>
               </FormControl>
               <Box display="flex" justifyContent="right">
@@ -741,7 +776,7 @@ function App() {
               </Box>
             </form>
           </Box>
-        </Box>
+        </ContentWrapper>
       ) : (
         <Box
           mt="4"
