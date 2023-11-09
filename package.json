@@ -8,7 +8,7 @@
     "dev": "netlify dev",
     "vite:dev": "vite",
     "vite:build": "vite build",
-    "postvite:build": "cp _redirects dist/_redirects",
+    "postvite:build": "cp _redirects _site/_redirects",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

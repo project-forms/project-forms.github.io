@@ -2,6 +2,9 @@
 .env
 .netlify
 
+# github pages
+_site
+
 # Logs
 logs
 *.log
