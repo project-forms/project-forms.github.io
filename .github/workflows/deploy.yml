@@ -31,10 +31,12 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
-      - name: Install dependencies 
+      - name: Install dependencies
         run: npm ci
-      - name: Build 
+      - name: Build
         run: npm run vite:build
+        env:
+          VITE_BACKEND_BASE_URL: "https://project-forms.netlify.app"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
 
