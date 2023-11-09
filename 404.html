@@ -14,29 +14,5 @@
 <body>
   <div id="root">loading ...</div>
 
-  <script type="importmap">
-    {
-      "imports": {
-        "@octokit-next/core": "https://esm.sh/@octokit-next/core@2.7.0?dev",
-        "@primer/octicons-react": "https://esm.sh/@primer/octicons-react@19.1.0?dev",
-        "@primer/react": "https://esm.sh/@primer/react@35.25.1?dev",
-        "idb-keyval": "https://esm.sh/idb-keyval@6.2.1?dev",
-        "github-project": "https://esm.sh/github-project@3.3.4?dev",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?dev",
-        "react-is": "https://esm.sh/react-is@18.2.0?dev",
-        "react": "https://esm.sh/react@18.2.0?dev",
-        "styled-components": "https://esm.sh/styled-components@5.3.10?dev",
-
-        "./components/octokit-provider.js": "/components/octokit-provider.js"
-      }
-    }
-  </script>
-
-  <!-- import Babel for on-the-fly JSX transformation -->
-  <script
-    crossorigin
-    src="https://unpkg.com/@babel/standalone@7.21.8/babel.js"
-  ></script>
-
-  <script type="text/babel" data-type="module" src="/app.js"></script>
+  <script type="module" src="/app.jsx"></script>
 </body>

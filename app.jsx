@@ -1,6 +1,7 @@
 // @ts-check
 
 import React from "react";
+import PropTypes from "prop-types";
 import { createRoot } from "react-dom/client";
 import {
   ActionList,
@@ -29,7 +30,7 @@ import {
   XCircleFillIcon,
   CheckCircleFillIcon,
 } from "@primer/octicons-react";
-import Project from "github-project";
+// import Project from "github-project";
 import { get, set } from "idb-keyval";
 
 import {
@@ -49,7 +50,7 @@ const SUPPORTED_PROJECT_FIELD_TYPES = [
  *
  * @template T
  * @param {string} key
- * @returns {import('.').Store<T>}
+ * @returns {import('./index.js').Store<T>}
  */
 function createStore(key) {
   return {
@@ -79,9 +80,9 @@ const VERIFICATION_STATE_DEFAULT = {
 };
 
 /**
- * @param {import('.').AppState} state
- * @param {import('.').AppStateAction} action
- * @returns {import('.').AppState}
+ * @param {import('./index.js').AppState} state
+ * @param {import('./index.js').AppStateAction} action
+ * @returns {import('./index.js').AppState}
  */
 function appStateReducer(state, { action, payload }) {
   console.log("transitioning from %s to %s", state.name, action);
@@ -144,8 +145,8 @@ function appStateReducer(state, { action, payload }) {
 
 /**
  *
- * @param {import(".").Parameters | null} parameters
- * @returns {import(".").AppState}
+ * @param {import("./index.js").Parameters | null} parameters
+ * @returns {import("./index.js").AppState}
  */
 function initAppState(parameters) {
   if (!parameters) {
@@ -186,11 +187,16 @@ export function ContentWrapper({ children, sx }) {
   );
 }
 
+ContentWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  sx: PropTypes.object,
+};
+
 function App() {
   const { authState, logout } = React.useContext(OctokitContext);
 
   const [parameters, setParameters] = React.useState(
-    /** @type {null | import('.').Parameters} */
+    /** @type {null | import('./index.js').Parameters} */
     (null)
   );
   const [isSubmittingIssue, setIsSubmittingIssue] = React.useState(false);
@@ -207,12 +213,12 @@ function App() {
   }
 
   /**
-   * @type {import(".").Store<import(".").StoreData>}
+   * @type {import("./index.js").Store<import("./index.js").StoreData>}
    */
   const store = createStore(currentPath);
 
   /**
-   * @type {[import(".").AppState, React.Dispatch<import(".").AppStateAction>]}
+   * @type {[import("./index.js").AppState, React.Dispatch<import("./index.js").AppStateAction>]}
    */
   const [appState, dispatch] = React.useReducer(appStateReducer, null, () => {
     const matches = currentPath.match(REGEX_VALID_PATH);
@@ -617,7 +623,7 @@ function App() {
   }
 
   /**
-   * @param {import(".").AppStateWithProjectData} appState
+   * @param {import("./index.js").AppStateWithProjectData} appState
    * @param {import("./components/octokit-provider.js").AuthenticatedAuthState} authState
    * @param {React.FormEvent<HTMLFormElement>} event
    */
@@ -650,14 +656,14 @@ function App() {
     console.log({ fields, projectFields });
 
     // Add the issue to the project
-    const project = new Project({
-      octokit: authState.octokit,
-      owner: appState.parameters.owner,
-      number: appState.parameters.projectNumber,
-      fields,
-    });
+    // const project = new Project({
+    //   octokit: authState.octokit,
+    //   owner: appState.parameters.owner,
+    //   number: appState.parameters.projectNumber,
+    //   fields,
+    // });
 
-    await project.items.add(issue.node_id, projectFields);
+    // await project.items.add(issue.node_id, projectFields);
 
     console.log("Issue added to project: %s", appState.project.url);
 
