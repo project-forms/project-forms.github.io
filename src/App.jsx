@@ -40,11 +40,6 @@ const SUPPORTED_PROJECT_FIELD_TYPES = [
   "ITERATION",
 ];
 
-const root = createRoot(
-  // @ts-expect-error - we know that #root exists
-  document.getElementById("root")
-);
-
 const REGEX_VALID_PATH =
   /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/projects\/(\d+)\/issues\/new$/i;
 
@@ -55,6 +50,9 @@ const VERIFICATION_STATE_DEFAULT = {
   hasProjectWriteAccess: null,
   error: null,
 };
+
+// @ts-expect-error - look into how to define env vars in Vite
+const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
 
 /**
  * @param {import('./index.js').AppState} state
@@ -584,7 +582,7 @@ export default function App() {
             size="large"
             leadingIcon={MarkGithubIcon}
             as="a"
-            href={`/api/github/oauth/login?redirectUrl=${location.href}`}
+            href={`${backendBaseUrl}/api/github/oauth/login?redirectUrl=${location.href}`}
           >
             Log In With GitHub
           </Button>

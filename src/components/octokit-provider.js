@@ -16,6 +16,9 @@ export const OctokitContext = createContext(
   (null)
 );
 
+// @ts-expect-error - look into how to define env vars in Vite
+const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
+
 let storeData = null;
 /** @type {import('./octokit-provider').Store} */
 let DEFAULT_STORE = {
@@ -141,7 +144,7 @@ async function handleCodeInUrl(store, setAuthState) {
  */
 async function getTokenFromCode(code) {
   try {
-    const response = await fetch("/api/github/oauth/token", {
+    const response = await fetch(`${backendBaseUrl}/api/github/oauth/token`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
