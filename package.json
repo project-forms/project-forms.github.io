@@ -5,12 +5,22 @@
   "version": "0.0.0-development",
   "description": "A web app for forms generated based on GitHub projects",
   "scripts": {
-    "start": "netlify dev"
+    "dev": "netlify dev",
+    "vite:dev": "vite",
+    "vite:build": "vite build",
+    "postvite:build": "cp _redirects dist/_redirects",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gregor Martynus (https://github.com/gr2m)",
   "license": "ISC",
   "repository": "github:project-forms/project-forms.github.io",
+  "dependencies": {
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
     "@netlify/functions": "^1.6.0",
     "@octokit-next/core": "^2.7.0",
@@ -18,9 +28,17 @@
     "@octokit-next/types-rest-api": "^2.7.0",
     "@primer/octicons-react": "^19.1.0",
     "@primer/react": "^35.25.1",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
     "github-project": "^3.3.4",
     "idb-keyval": "^6.2.1",
-    "netlify-cli": "^15.3.1"
+    "netlify-cli": "^15.3.1",
+    "vite": "^4.4.5"
   },
   "release": {
     "branches": [

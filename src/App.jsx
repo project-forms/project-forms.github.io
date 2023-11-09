@@ -1,12 +1,12 @@
 // @ts-check
 
 import React from "react";
+import PropTypes from "prop-types";
 import { createRoot } from "react-dom/client";
 import {
   ActionList,
   ActionMenu,
   Avatar,
-  BaseStyles,
   Box,
   Breadcrumbs,
   Button,
@@ -21,7 +21,6 @@ import {
   Text,
   Textarea,
   TextInput,
-  ThemeProvider,
 } from "@primer/react";
 import {
   MarkGithubIcon,
@@ -29,13 +28,9 @@ import {
   XCircleFillIcon,
   CheckCircleFillIcon,
 } from "@primer/octicons-react";
-import Project from "github-project";
-import { get, set } from "idb-keyval";
 
-import {
-  OctokitProvider,
-  OctokitContext,
-} from "./components/octokit-provider.js";
+import { OctokitContext } from "./components/octokit-provider.js";
+import createStore from "./lib/create-store.js";
 
 const SUPPORTED_PROJECT_FIELD_TYPES = [
   "TEXT",
@@ -44,23 +39,6 @@ const SUPPORTED_PROJECT_FIELD_TYPES = [
   "SINGLE_SELECT",
   "ITERATION",
 ];
-
-/**
- *
- * @template T
- * @param {string} key
- * @returns {import('.').Store<T>}
- */
-function createStore(key) {
-  return {
-    async get() {
-      return get(key);
-    },
-    async set(value) {
-      return set(key, value);
-    },
-  };
-}
 
 const root = createRoot(
   // @ts-expect-error - we know that #root exists
@@ -79,9 +57,9 @@ const VERIFICATION_STATE_DEFAULT = {
 };
 
 /**
- * @param {import('.').AppState} state
- * @param {import('.').AppStateAction} action
- * @returns {import('.').AppState}
+ * @param {import('./index.js').AppState} state
+ * @param {import('./index.js').AppStateAction} action
+ * @returns {import('./index.js').AppState}
  */
 function appStateReducer(state, { action, payload }) {
   console.log("transitioning from %s to %s", state.name, action);
@@ -144,8 +122,8 @@ function appStateReducer(state, { action, payload }) {
 
 /**
  *
- * @param {import(".").Parameters | null} parameters
- * @returns {import(".").AppState}
+ * @param {import("..").Parameters | null} parameters
+ * @returns {import("..").AppState}
  */
 function initAppState(parameters) {
   if (!parameters) {
@@ -186,11 +164,16 @@ export function ContentWrapper({ children, sx }) {
   );
 }
 
-function App() {
+ContentWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  sx: PropTypes.object,
+};
+
+export default function App() {
   const { authState, logout } = React.useContext(OctokitContext);
 
   const [parameters, setParameters] = React.useState(
-    /** @type {null | import('.').Parameters} */
+    /** @type {null | import('./index.js').Parameters} */
     (null)
   );
   const [isSubmittingIssue, setIsSubmittingIssue] = React.useState(false);
@@ -207,12 +190,12 @@ function App() {
   }
 
   /**
-   * @type {import(".").Store<import(".").StoreData>}
+   * @type {import("..").Store<import("..").StoreData>}
    */
   const store = createStore(currentPath);
 
   /**
-   * @type {[import(".").AppState, React.Dispatch<import(".").AppStateAction>]}
+   * @type {[import("..").AppState, React.Dispatch<import("..").AppStateAction>]}
    */
   const [appState, dispatch] = React.useReducer(appStateReducer, null, () => {
     const matches = currentPath.match(REGEX_VALID_PATH);
@@ -617,7 +600,7 @@ function App() {
   }
 
   /**
-   * @param {import(".").AppStateWithProjectData} appState
+   * @param {import("..").AppStateWithProjectData} appState
    * @param {import("./components/octokit-provider.js").AuthenticatedAuthState} authState
    * @param {React.FormEvent<HTMLFormElement>} event
    */
@@ -650,14 +633,14 @@ function App() {
     console.log({ fields, projectFields });
 
     // Add the issue to the project
-    const project = new Project({
-      octokit: authState.octokit,
-      owner: appState.parameters.owner,
-      number: appState.parameters.projectNumber,
-      fields,
-    });
+    // const project = new Project({
+    //   octokit: authState.octokit,
+    //   owner: appState.parameters.owner,
+    //   number: appState.parameters.projectNumber,
+    //   fields,
+    // });
 
-    await project.items.add(issue.node_id, projectFields);
+    // await project.items.add(issue.node_id, projectFields);
 
     console.log("Issue added to project: %s", appState.project.url);
 
@@ -803,13 +786,3 @@ function App() {
     </>
   );
 }
-
-root.render(
-  <ThemeProvider>
-    <BaseStyles>
-      <OctokitProvider store={createStore("octokit-provider")}>
-        <App />
-      </OctokitProvider>
-    </BaseStyles>
-  </ThemeProvider>
-);
