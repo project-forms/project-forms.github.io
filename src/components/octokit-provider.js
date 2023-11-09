@@ -128,6 +128,7 @@ async function handleCodeInUrl(store, setAuthState) {
     location.search.replace(/\b(code|state)=\w+/g, "").replace(/[?&]+$/, "");
   history.replaceState({}, "", path);
 
+  setAuthState({ type: "loading" });
   const token = await getTokenFromCode(code);
   const octokit = new Octokit({ auth: token });
 
