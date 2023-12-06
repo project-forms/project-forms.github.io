@@ -3,12 +3,15 @@ import {
   Button,
   FormControl,
   Link,
+  Select,
   Spinner,
   Text,
   Textarea,
   TextInput,
 } from "@primer/react";
 import { useForm } from "react-hook-form";
+
+import ContentWrapper from "./ContentWrapper.jsx";
 
 export default function NewIssueForm({
   // onSubmit,
@@ -27,6 +30,38 @@ export default function NewIssueForm({
     // TODO: figure out why project fields are not set on data
     console.log(data);
   };
+
+  const projectFieldsElements = projectFields.map((field) => {
+    if (field.options) {
+      const options = field.options.map((option) => {
+        return (
+          <Select.Option key={option.id} value={option.name}>
+            {option.humanName || option.name}
+          </Select.Option>
+        );
+      });
+
+      return (
+        <FormControl key={field.id}>
+          <FormControl.Label>{field.name}</FormControl.Label>
+          <Select {...register(field.name)} name={field.name}>
+            {options}
+          </Select>
+        </FormControl>
+      );
+    }
+
+    return (
+      <FormControl key={field.id}>
+        <FormControl.Label>{field.name}</FormControl.Label>
+        <TextInput
+          {...register(field.name)}
+          name={field.name}
+          type={field.type}
+        />
+      </FormControl>
+    );
+  });
 
   if (submittedIssueUrl) {
     return (
@@ -49,7 +84,7 @@ export default function NewIssueForm({
   }
 
   return (
-    <>
+    <ContentWrapper>
       <Box sx={{ display: "grid", gridGap: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl required>
@@ -64,9 +99,12 @@ export default function NewIssueForm({
               })}
               block
             />
+            {formState.errors.title && (
+              <span className="error">{formState.errors.title.message}</span>
+            )}
           </FormControl>
 
-          {projectFields}
+          {projectFieldsElements}
 
           <FormControl>
             <FormControl.Label>Issue description</FormControl.Label>
@@ -93,6 +131,6 @@ export default function NewIssueForm({
           </Box>
         </form>
       </Box>
-    </>
+    </ContentWrapper>
   );
 }

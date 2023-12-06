@@ -1,7 +1,7 @@
 import { Box, Breadcrumbs, Heading, Link } from "@primer/react";
-import PropTypes from "prop-types";
 
 import Nav from "../../../../../../components/Nav.jsx";
+import ContentWrapper from "../../../../../../components/ContentWrapper.jsx";
 import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
 
 /**
@@ -56,29 +56,3 @@ export default function NewIssuePage({
     </>
   );
 }
-
-/**
- * @param {object} options
- * @param {import("react").ReactNode} options.children
- * @param {import("@primer/react/lib-esm/sx").BetterSystemStyleObject} [options.sx]
- * @returns
- */
-export function ContentWrapper({ children, sx }) {
-  return (
-    <Box
-      sx={{
-        p: 4,
-        m: "0 auto",
-        maxWidth: "1280px",
-        ...sx,
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
-
-ContentWrapper.propTypes = {
-  children: PropTypes.node.isRequired,
-  sx: PropTypes.object,
-};

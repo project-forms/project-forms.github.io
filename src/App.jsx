@@ -1,24 +1,17 @@
 // @ts-check
 
 import React from "react";
-import { createRoot } from "react-dom/client";
 import {
   ActionList,
-  ActionMenu,
-  Avatar,
   Box,
-  Breadcrumbs,
   Button,
   FormControl,
-  Header,
   Heading,
-  IconButton,
   Link,
   Select,
   Spinner,
   StyledOcticon,
   Text,
-  Textarea,
   TextInput,
 } from "@primer/react";
 import {
@@ -621,32 +614,6 @@ export default function App() {
 
   const { owner, repo, projectNumber } = appState.parameters;
 
-  const projectFields = appState.project.fields.map((field) => {
-    if (field.options) {
-      const options = field.options.map((option) => {
-        return (
-          <Select.Option key={option.id} value={option.name}>
-            {option.humanName || option.name}
-          </Select.Option>
-        );
-      });
-
-      return (
-        <FormControl key={field.id}>
-          <FormControl.Label>{field.name}</FormControl.Label>
-          <Select name={field.name} children={options} />
-        </FormControl>
-      );
-    }
-
-    return (
-      <FormControl key={field.id}>
-        <FormControl.Label>{field.name}</FormControl.Label>
-        <TextInput name={field.name} type={field.type} />
-      </FormControl>
-    );
-  });
-
   return (
     <NewIssuePage
       owner={owner}
@@ -655,7 +622,7 @@ export default function App() {
       projectUrl={appState.project.url}
       projectName={appState.project.title}
       submittedIssueUrl={submittedIssueUrl}
-      projectFields={projectFields}
+      projectFields={appState.project.fields}
       isSubmittingIssue={isSubmittingIssue}
     />
   );
