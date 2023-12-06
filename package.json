@@ -19,7 +19,8 @@
   "dependencies": {
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2"
   },
   "devDependencies": {
     "@netlify/functions": "^1.6.0",

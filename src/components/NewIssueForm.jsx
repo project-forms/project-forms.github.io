@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 
 export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
-  const { formState, register, onSubmit } = useForm({
+  const { formState, register, handleSubmit } = useForm({
     mode: "onTouched",
     defaultValues: {
       title: "",
@@ -38,7 +38,8 @@ export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            onSubmit(event.formData());
+            handleSubmit(event.formData());
+            // TODO how to call props.onSubmit()
           }}
         >
           <FormControl required>

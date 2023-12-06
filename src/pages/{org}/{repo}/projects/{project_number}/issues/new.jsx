@@ -1,23 +1,21 @@
-import React from "react";
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  FormControl,
-  Heading,
-  Link,
-  Spinner,
-  Text,
-  Textarea,
-  TextInput,
-} from "@primer/react";
-import Nav from "../../../../../components/Nav.js";
-import NewIssueForm from "../../../../../../components/NewIssueForm.js";
-import useAuthState from "../../../../../../hooks/use-auth-state.js";
+import { Box, Breadcrumbs, Heading, Link } from "@primer/react";
+import PropTypes from "prop-types";
 
-export default function NewIssuePage() {
-  const { authState } = useAuthState();
+import Nav from "../../../../../../components/Nav.jsx";
+import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
 
+/**
+ * @param {NewIssuePageProps} props
+ * @returns
+ */
+export default function NewIssuePage({
+  owner,
+  repo,
+  projectNumber,
+  projectUrl,
+  projectName,
+  submittedIssueUrl,
+}) {
   return (
     <>
       <Nav />
@@ -42,8 +40,8 @@ export default function NewIssuePage() {
           </Breadcrumbs>
           <Heading sx={{ fontSize: 2 }}>
             Submit for to project{" "}
-            <Link href={appState.project.url}>
-              #{projectNumber} {appState.project.name}
+            <Link href={projectUrl}>
+              #{projectNumber} {projectName}
             </Link>
           </Heading>
         </ContentWrapper>
@@ -52,3 +50,29 @@ export default function NewIssuePage() {
     </>
   );
 }
+
+/**
+ * @param {object} options
+ * @param {import("react").ReactNode} options.children
+ * @param {import("@primer/react/lib-esm/sx").BetterSystemStyleObject} [options.sx]
+ * @returns
+ */
+export function ContentWrapper({ children, sx }) {
+  return (
+    <Box
+      sx={{
+        p: 4,
+        m: "0 auto",
+        maxWidth: "1280px",
+        ...sx,
+      }}
+    >
+      {children}
+    </Box>
+  );
+}
+
+ContentWrapper.propTypes = {
+  children: PropTypes.node.isRequired,
+  sx: PropTypes.object,
+};
