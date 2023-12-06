@@ -1,7 +1,21 @@
-import React from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  Link,
+  Spinner,
+  Text,
+  Textarea,
+  TextInput,
+} from "@primer/react";
 import { useForm } from "react-hook-form";
 
-export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
+export default function NewIssueForm({
+  // onSubmit,
+  submittedIssueUrl,
+  projectFields,
+  isSubmittingIssue,
+}) {
   const { formState, register, handleSubmit } = useForm({
     mode: "onTouched",
     defaultValues: {
@@ -9,6 +23,10 @@ export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
       body: "",
     },
   });
+  const onSubmit = (data) => {
+    // TODO: figure out why project fields are not set on data
+    console.log(data);
+  };
 
   if (submittedIssueUrl) {
     return (
@@ -31,17 +49,9 @@ export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
   }
 
   return (
-    <ContentWrapper>
-      <Heading sx={{ mb: 4 }}></Heading>
-
+    <>
       <Box sx={{ display: "grid", gridGap: 3 }}>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            handleSubmit(event.formData());
-            // TODO how to call props.onSubmit()
-          }}
-        >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl required>
             <FormControl.Label>Issue title</FormControl.Label>
             <TextInput
@@ -83,6 +93,6 @@ export default function NewIssueForm({ onSubmit, submittedIssueUrl }) {
           </Box>
         </form>
       </Box>
-    </ContentWrapper>
+    </>
   );
 }

@@ -15,6 +15,8 @@ export default function NewIssuePage({
   projectUrl,
   projectName,
   submittedIssueUrl,
+  projectFields,
+  isSubmittingIssue,
 }) {
   return (
     <>
@@ -46,7 +48,11 @@ export default function NewIssuePage({
           </Heading>
         </ContentWrapper>
       </Box>
-      <NewIssueForm submittedIssueUrl={submittedIssueUrl} />
+      <NewIssueForm
+        submittedIssueUrl={submittedIssueUrl}
+        projectFields={projectFields}
+        isSubmittingIssue={isSubmittingIssue}
+      />
     </>
   );
 }

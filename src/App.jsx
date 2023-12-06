@@ -1,7 +1,6 @@
 // @ts-check
 
 import React from "react";
-import PropTypes from "prop-types";
 import { createRoot } from "react-dom/client";
 import {
   ActionList,
@@ -648,5 +647,16 @@ export default function App() {
     );
   });
 
-  return <NewIssuePage />;
+  return (
+    <NewIssuePage
+      owner={owner}
+      repo={repo}
+      projectNumber={projectNumber}
+      projectUrl={appState.project.url}
+      projectName={appState.project.title}
+      submittedIssueUrl={submittedIssueUrl}
+      projectFields={projectFields}
+      isSubmittingIssue={isSubmittingIssue}
+    />
+  );
 }
