@@ -10,11 +10,12 @@ import {
   TextInput,
 } from "@primer/react";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 import ContentWrapper from "./ContentWrapper.jsx";
 
 export default function NewIssueForm({
-  // onSubmit,
+  onSubmit,
   submittedIssueUrl,
   projectFields,
   isSubmittingIssue,
@@ -26,10 +27,6 @@ export default function NewIssueForm({
       body: "",
     },
   });
-  const onSubmit = (data) => {
-    // TODO: figure out why project fields are not set on data
-    console.log(data);
-  };
 
   const projectFieldsElements = projectFields.map((field) => {
     if (field.options) {
@@ -108,22 +105,13 @@ export default function NewIssueForm({
 
           <FormControl>
             <FormControl.Label>Issue description</FormControl.Label>
-            <Textarea
-              block
-              {...register("body", {
-                validate: (value) => {
-                  if (value === "") {
-                    return "Title is required.";
-                  }
-                },
-              })}
-            ></Textarea>
+            <Textarea block {...register("body")}></Textarea>
           </FormControl>
           <Box display="flex" justifyContent="right">
             <Button
               type="submit"
               variant="primary"
-              disabled={!formState.isValid}
+              disabled={!formState.isValid || isSubmittingIssue}
             >
               {isSubmittingIssue && <Spinner size="small" />}
               Submit new issue
