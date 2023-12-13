@@ -10,7 +10,6 @@ import {
   TextInput,
 } from "@primer/react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 
 import ContentWrapper from "./ContentWrapper.jsx";
 

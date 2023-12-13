@@ -5,14 +5,11 @@ import {
   ActionList,
   Box,
   Button,
-  FormControl,
   Heading,
   Link,
-  Select,
   Spinner,
   StyledOcticon,
   Text,
-  TextInput,
 } from "@primer/react";
 import {
   MarkGithubIcon,
@@ -141,8 +138,7 @@ export default function App() {
     /** @type {null | import('./index.js').Parameters} */
     (null)
   );
-  const [isSubmittingIssue, setIsSubmittingIssue] = React.useState(false);
-  const [submittedIssueUrl, setSubmittedIssueUrl] = React.useState(null);
+
   const [verificationState, setVerificationState] = React.useState(
     VERIFICATION_STATE_DEFAULT
   );
@@ -564,54 +560,6 @@ export default function App() {
     );
   }
 
-  /**
-   * @param {import("..").AppStateWithProjectData} appState
-   * @param {import("./components/octokit-provider.js").AuthenticatedAuthState} authState
-   * @param {React.FormEvent<HTMLFormElement>} event
-   */
-  async function handleSubmit(appState, authState, event) {
-    event.preventDefault();
-
-    setIsSubmittingIssue(true);
-    const { title, body, ...projectFields } = Object.fromEntries(
-      new FormData(event.target)
-    );
-
-    console.log("Creating issue ...");
-    // Create the issue
-    const { data: issue } = await authState.octokit.request(
-      "POST /repos/{owner}/{repo}/issues",
-      {
-        owner: appState.parameters.owner,
-        repo: appState.parameters.repo,
-        title: String(title),
-        body: String(body),
-      }
-    );
-    console.log("Issue created: %s", issue.html_url);
-
-    console.log("Adding issue to project ...");
-
-    const fields = Object.fromEntries(
-      Object.keys(projectFields).map((name) => [name, name])
-    );
-    console.log({ fields, projectFields });
-
-    // Add the issue to the project
-    // const project = new Project({
-    //   octokit: authState.octokit,
-    //   owner: appState.parameters.owner,
-    //   number: appState.parameters.projectNumber,
-    //   fields,
-    // });
-
-    // await project.items.add(issue.node_id, projectFields);
-
-    console.log("Issue added to project: %s", appState.project.url);
-
-    setSubmittedIssueUrl(issue.html_url);
-  }
-
   const { owner, repo, projectNumber } = appState.parameters;
 
   return (
@@ -621,9 +569,7 @@ export default function App() {
       projectNumber={projectNumber}
       projectUrl={appState.project.url}
       projectName={appState.project.title}
-      submittedIssueUrl={submittedIssueUrl}
       projectFields={appState.project.fields}
-      isSubmittingIssue={isSubmittingIssue}
     />
   );
 }
