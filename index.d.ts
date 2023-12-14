@@ -156,3 +156,9 @@ export type Store<T> = {
   get: () => Promise<T | null>;
   set: (data: T | null) => Promise<void>;
 };
+
+export type NewIssuePageProps = {
+  owner: string;
+  repo: string;
+  projectNumber: number;
+};

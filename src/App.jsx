@@ -1,26 +1,15 @@
 // @ts-check
 
 import React from "react";
-import PropTypes from "prop-types";
-import { createRoot } from "react-dom/client";
 import {
   ActionList,
-  ActionMenu,
-  Avatar,
   Box,
-  Breadcrumbs,
   Button,
-  FormControl,
-  Header,
   Heading,
-  IconButton,
   Link,
-  Select,
   Spinner,
   StyledOcticon,
   Text,
-  Textarea,
-  TextInput,
 } from "@primer/react";
 import {
   MarkGithubIcon,
@@ -31,6 +20,7 @@ import {
 
 import { OctokitContext } from "./components/octokit-provider.js";
 import createStore from "./lib/create-store.js";
+import NewIssuePage from "./pages/{org}/{repo}/projects/{project_number}/issues/new.jsx";
 
 const SUPPORTED_PROJECT_FIELD_TYPES = [
   "TEXT",
@@ -141,32 +131,6 @@ function initAppState(parameters) {
   };
 }
 
-/**
- * @param {object} options
- * @param {import("react").ReactNode} options.children
- * @param {import("@primer/react/lib-esm/sx").BetterSystemStyleObject} [options.sx]
- * @returns
- */
-export function ContentWrapper({ children, sx }) {
-  return (
-    <Box
-      sx={{
-        p: 4,
-        m: "0 auto",
-        maxWidth: "1280px",
-        ...sx,
-      }}
-    >
-      {children}
-    </Box>
-  );
-}
-
-ContentWrapper.propTypes = {
-  children: PropTypes.node.isRequired,
-  sx: PropTypes.object,
-};
-
 export default function App() {
   const { authState, logout } = React.useContext(OctokitContext);
 
@@ -174,8 +138,7 @@ export default function App() {
     /** @type {null | import('./index.js').Parameters} */
     (null)
   );
-  const [isSubmittingIssue, setIsSubmittingIssue] = React.useState(false);
-  const [submittedIssueUrl, setSubmittedIssueUrl] = React.useState(null);
+
   const [verificationState, setVerificationState] = React.useState(
     VERIFICATION_STATE_DEFAULT
   );
@@ -597,190 +560,16 @@ export default function App() {
     );
   }
 
-  /**
-   * @param {import("..").AppStateWithProjectData} appState
-   * @param {import("./components/octokit-provider.js").AuthenticatedAuthState} authState
-   * @param {React.FormEvent<HTMLFormElement>} event
-   */
-  async function handleSubmit(appState, authState, event) {
-    event.preventDefault();
-
-    setIsSubmittingIssue(true);
-    const { title, body, ...projectFields } = Object.fromEntries(
-      new FormData(event.target)
-    );
-
-    console.log("Creating issue ...");
-    // Create the issue
-    const { data: issue } = await authState.octokit.request(
-      "POST /repos/{owner}/{repo}/issues",
-      {
-        owner: appState.parameters.owner,
-        repo: appState.parameters.repo,
-        title: String(title),
-        body: String(body),
-      }
-    );
-    console.log("Issue created: %s", issue.html_url);
-
-    console.log("Adding issue to project ...");
-
-    const fields = Object.fromEntries(
-      Object.keys(projectFields).map((name) => [name, name])
-    );
-    console.log({ fields, projectFields });
-
-    // Add the issue to the project
-    // const project = new Project({
-    //   octokit: authState.octokit,
-    //   owner: appState.parameters.owner,
-    //   number: appState.parameters.projectNumber,
-    //   fields,
-    // });
-
-    // await project.items.add(issue.node_id, projectFields);
-
-    console.log("Issue added to project: %s", appState.project.url);
-
-    setSubmittedIssueUrl(issue.html_url);
-  }
-
   const { owner, repo, projectNumber } = appState.parameters;
 
-  const projectFields = appState.project.fields.map((field) => {
-    if (field.options) {
-      const options = field.options.map((option) => {
-        return (
-          <Select.Option key={option.id} value={option.name}>
-            {option.humanName || option.name}
-          </Select.Option>
-        );
-      });
-
-      return (
-        <FormControl key={field.id}>
-          <FormControl.Label>{field.name}</FormControl.Label>
-          <Select name={field.name} children={options} />
-        </FormControl>
-      );
-    }
-
-    return (
-      <FormControl key={field.id}>
-        <FormControl.Label>{field.name}</FormControl.Label>
-        <TextInput name={field.name} type={field.type} />
-      </FormControl>
-    );
-  });
-
   return (
-    <>
-      <Header>
-        <Header.Item full>
-          <Header.Link href="https://github.com/project-forms">
-            <StyledOcticon icon={TableIcon} size={32} sx={{ mr: 2 }} />
-            <span>Project Forms</span>
-          </Header.Link>
-        </Header.Item>
-        {authState.user?.avatar_url && (
-          <Header.Item>
-            <ActionMenu>
-              <ActionMenu.Anchor>
-                <IconButton
-                  sx={{ p: 0 }}
-                  icon={() => (
-                    <Avatar src={authState.user.avatar_url} size={32} />
-                  )}
-                  variant="invisible"
-                />
-              </ActionMenu.Anchor>
-
-              <ActionMenu.Overlay>
-                <ActionList onClick={logout}>
-                  <ActionList.Item>Sign Out</ActionList.Item>
-                </ActionList>
-              </ActionMenu.Overlay>
-            </ActionMenu>
-          </Header.Item>
-        )}
-      </Header>
-      <Box
-        sx={{
-          bg: "canvas.inset",
-          borderBottom: "1px solid",
-          borderBottomColor: "border.default",
-        }}
-      >
-        <ContentWrapper>
-          <Breadcrumbs>
-            <Breadcrumbs.Item href={`https://github.com/${owner}`}>
-              {owner}
-            </Breadcrumbs.Item>
-            <Breadcrumbs.Item
-              href={`https://github.com/project-forms/${repo}`}
-              selected
-            >
-              {repo}
-            </Breadcrumbs.Item>
-          </Breadcrumbs>
-          <Heading sx={{ fontSize: 2 }}>
-            Submit for to project{" "}
-            <Link href={appState.project.url}>
-              #{projectNumber} {appState.project.name}
-            </Link>
-          </Heading>
-        </ContentWrapper>
-      </Box>
-
-      {submittedIssueUrl === null ? (
-        <ContentWrapper>
-          <Heading sx={{ mb: 4 }}></Heading>
-
-          <Box sx={{ display: "grid", gridGap: 3 }}>
-            <form
-              onSubmit={(event) => handleSubmit(appState, authState, event)}
-            >
-              <FormControl required>
-                <FormControl.Label>Issue title</FormControl.Label>
-                <TextInput block name="title" />
-              </FormControl>
-
-              {projectFields}
-
-              <FormControl>
-                <FormControl.Label>Issue description</FormControl.Label>
-                <Textarea block name="body"></Textarea>
-              </FormControl>
-              <Box display="flex" justifyContent="right">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isSubmittingIssue}
-                >
-                  {isSubmittingIssue && <Spinner size="small" />}
-                  Submit new issue
-                </Button>
-              </Box>
-            </form>
-          </Box>
-        </ContentWrapper>
-      ) : (
-        <Box
-          mt="4"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          height="100vh"
-        >
-          <Box alignSelf="center">
-            <Text textAlign="center">
-              Issue submitted:{" "}
-              <Link href={submittedIssueUrl}>{submittedIssueUrl}</Link>
-            </Text>
-          </Box>
-        </Box>
-      )}
-    </>
+    <NewIssuePage
+      owner={owner}
+      repo={repo}
+      projectNumber={projectNumber}
+      projectUrl={appState.project.url}
+      projectName={appState.project.title}
+      projectFields={appState.project.fields}
+    />
   );
 }
