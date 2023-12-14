@@ -1,7 +1,30 @@
-// TODO: react-testing-library
-//
-// assertions
-// (test start: mount <NewIssueForm />, fill in required props)
-// 1. assert that button with text (`.getByText()`) “Submit new issue” is disabled
-// - [async action] type into field with label (`.getByLabel()`) “Title” (anything)
-// 2. assert button with text (`.getByText()`) "Submit new issue" is NOT disabled
+import { describe, expect, test } from "vitest";
+import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import NewIssueForm from "./NewIssueForm.jsx";
+
+describe("NewIssueForm", () => {
+  test("title is required", async () => {
+    const user = userEvent.setup();
+
+    const { getByRole, getByLabelText } = render(
+      <NewIssueForm
+        onSubmit={() => {}}
+        submittedIssueUrl=""
+        projectFields={[]}
+      />
+    );
+
+    const submitButton = getByRole("button", { name: "Submit new issue" });
+
+    expect(submitButton.getAttribute("disabled")).not.toBeNull();
+
+    await user.click(submitButton);
+
+    const titleInput = getByLabelText("Issue title*");
+    await user.type(titleInput, "Test issue title");
+
+    expect(submitButton.getAttribute("disabled")).toBeNull();
+  });
+});
