@@ -5,6 +5,7 @@
   "version": "0.0.0-development",
   "description": "A web app for forms generated based on GitHub projects",
   "scripts": {
+    "test": "vitest run",
     "dev": "netlify dev",
     "vite:dev": "vite",
     "vite:build": "vite build",
@@ -29,17 +30,22 @@
     "@octokit-next/types-rest-api": "^2.7.0",
     "@primer/octicons-react": "^19.1.0",
     "@primer/react": "^35.25.1",
+    "@testing-library/dom": "^9.3.3",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react-swc": "^3.3.2",
+    "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "github-project": "^5.4.0",
     "idb-keyval": "^6.2.1",
+    "jsdom": "^23.0.1",
     "netlify-cli": "^15.3.1",
-    "vite": "^4.4.5"
+    "vite": "^5.0.9",
+    "vitest": "^1.0.4"
   },
   "release": {
     "branches": [
