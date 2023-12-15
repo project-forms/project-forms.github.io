@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useContext } from "react";
 import { Box, Breadcrumbs, Heading, Link } from "@primer/react";
 import Project from "github-project";
