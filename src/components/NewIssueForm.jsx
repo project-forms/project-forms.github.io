@@ -18,7 +18,7 @@ export default function NewIssueForm({
   onSubmit,
   submittedIssueUrl,
   projectFields,
-  isSubmittingIssue,
+  isSubmittingIssue = false,
 }) {
   const { formState, register, handleSubmit } = useForm({
     mode: "onTouched",
