@@ -45,9 +45,9 @@ const VERIFICATION_STATE_DEFAULT = {
 const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
 
 /**
- * @param {import('./index.js').AppState} state
- * @param {import('./index.js').AppStateAction} action
- * @returns {import('./index.js').AppState}
+ * @param {import('../index.d.ts').AppState} state
+ * @param {import('../index.d.ts').AppStateAction} action
+ * @returns {import('../index.d.ts').AppState}
  */
 function appStateReducer(state, { action, payload }) {
   console.log("transitioning from %s to %s", state.name, action);
@@ -135,7 +135,7 @@ export default function App() {
   const { authState, logout } = React.useContext(OctokitContext);
 
   const [parameters, setParameters] = React.useState(
-    /** @type {null | import('./index.js').Parameters} */
+    /** @type {null | import('../index.d.ts').Parameters} */
     (null)
   );
 
