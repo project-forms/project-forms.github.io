@@ -12,7 +12,7 @@ import {
 import { Octokit } from "@octokit-next/core";
 
 export const OctokitContext = createContext(
-  /** @type {import('./octokit-provider').OctokitContextValue} */
+  /** @type {import('./octokit-provider').OctokitContextValue | null} */
   (null)
 );
 
@@ -128,7 +128,7 @@ async function handleCodeInUrl(store, setAuthState) {
     location.search.replace(/\b(code|state)=\w+/g, "").replace(/[?&]+$/, "");
   history.replaceState({}, "", path);
 
-  setAuthState({ type: "loading" });
+  setAuthState({ type: "loading", octokit: new Octokit() });
   const token = await getTokenFromCode(code);
   const octokit = new Octokit({ auth: token });
 

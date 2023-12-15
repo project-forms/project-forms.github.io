@@ -4,7 +4,7 @@ import { get, set } from "idb-keyval";
  *
  * @template T
  * @param {string} key
- * @returns {import('./index.js').Store<T>}
+ * @returns {import('../..').Store<T>}
  */
 export default function createStore(key) {
   return {

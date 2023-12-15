@@ -38,4 +38,4 @@ export type OctokitContextValue = {
 };
 export const OctokitContext: React.Context<OctokitContextValue>;
 
-export const OctokitProvider: React.Provider;
+export const OctokitProvider: React.Provider<unknown>;
