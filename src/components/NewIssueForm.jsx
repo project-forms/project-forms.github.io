@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -17,7 +18,7 @@ export default function NewIssueForm({
   onSubmit,
   submittedIssueUrl,
   projectFields,
-  isSubmittingIssue,
+  isSubmittingIssue = false,
 }) {
   const { formState, register, handleSubmit } = useForm({
     mode: "onTouched",
@@ -81,7 +82,7 @@ export default function NewIssueForm({
 
   return (
     <ContentWrapper>
-      <Box sx={{ display: "grid", gridGap: 3 }}>
+      <Box sx={{ display: "grid", gap: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl required>
             <FormControl.Label>Issue title</FormControl.Label>
