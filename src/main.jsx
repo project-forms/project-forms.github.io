@@ -1,3 +1,4 @@
+import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { BaseStyles, ThemeProvider } from "@primer/react";
@@ -7,6 +8,7 @@ import createStore from "./lib/create-store.js";
 import App from "./App.jsx";
 import "./index.css";
 
+// @ts-expect-error
 ReactDOM.createRoot(document.getElementById("root")).render(
   <ThemeProvider>
     <BaseStyles>

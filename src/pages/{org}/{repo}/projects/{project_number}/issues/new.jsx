@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useContext } from "react";
 import { Box, Breadcrumbs, Heading, Link } from "@primer/react";
 import Project from "github-project";
@@ -8,7 +9,7 @@ import ContentWrapper from "../../../../../../components/ContentWrapper.jsx";
 import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
 
 /**
- * @param {NewIssuePageProps} props
+ * @param {import("../../../../../../..").NewIssuePageProps} props
  * @returns
  */
 export default function NewIssuePage({
@@ -21,11 +22,9 @@ export default function NewIssuePage({
 }) {
   const { authState } = useContext(OctokitContext);
   const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
-  const [submittedIssueUrl, setSubmittedIssueUrl] = useState(null);
+  const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
 
   /**
-   * @param {import("..").AppStateWithProjectData} appState
-   * @param {import("./components/octokit-provider.js").AuthenticatedAuthState} authState
    * @param {Record<string, unknown>} data
    */
   async function onSubmit(data) {
@@ -63,6 +62,7 @@ export default function NewIssuePage({
     });
 
     try {
+      // @ts-expect-error
       await project.items.add(issue.node_id, projectFields);
     } catch (error) {
       console.error(error.details);

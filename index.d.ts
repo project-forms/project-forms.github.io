@@ -55,24 +55,27 @@ type Access = {
   hasProjectWriteAccess: Boolean;
 };
 
+type Project = {
+  title: string;
+  url: string;
+  fields?: ProjectField[];
+};
+
 type AppStateActionAccessError = {
   action: "accessError";
   payload: {
     parameters: Parameters;
     access: Access;
-    project?: {
-      title: string;
-      url: string;
-    };
+    project?: Project;
   };
 };
 
 type SupportedProjectFieldTypes =
-  | TEXT
-  | NUMBER
-  | DATE
-  | SINGLE_SELECT
-  | ITERATION;
+  | "TEXT"
+  | "NUMBER"
+  | "DATE"
+  | "SINGLE_SELECT"
+  | "ITERATION";
 
 type ProjectFieldOption = {
   id: string;
@@ -90,11 +93,7 @@ type AppStateActionProjectDataLoaded = {
   action: "projectDataLoaded";
   payload: {
     parameters: Parameters;
-    project: {
-      title: string;
-      url: string;
-      fields: ProjectField[];
-    };
+    project: Project;
   };
 };
 
@@ -130,30 +129,19 @@ type AppStateWithAccessError = AppStateValidPath & {
   name: "accessError";
   error: "accessError";
   access: Access;
-  project?: {
-    title: string;
-    url: string;
-  };
+  project?: Project;
 };
 type AppStateWithProjectData = AppStateValidPath & {
   name: "projectDataLoaded";
   isUnauthenticated: false;
   parameters: Parameters;
-  project: {
-    title: string;
-    url: string;
-    fields: any;
-  };
+  project: Project;
 };
 
-export type StoreData = {
-  hasRepoAccess: Boolean;
-  hasProjectReadAccess: Boolean;
-  hasProjectWriteAccess: Boolean;
-};
+export type StoreData = Project;
 
 export type Store<T> = {
-  get: () => Promise<T | null>;
+  get: () => Promise<T | null | undefined>;
   set: (data: T | null) => Promise<void>;
 };
 
@@ -161,4 +149,7 @@ export type NewIssuePageProps = {
   owner: string;
   repo: string;
   projectNumber: number;
+  projectUrl: string;
+  projectName: string;
+  projectFields?: ProjectField[];
 };

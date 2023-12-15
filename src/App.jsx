@@ -45,9 +45,9 @@ const VERIFICATION_STATE_DEFAULT = {
 const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
 
 /**
- * @param {import('../index.d.ts').AppState} state
- * @param {import('../index.d.ts').AppStateAction} action
- * @returns {import('../index.d.ts').AppState}
+ * @param {import('..').AppState} state
+ * @param {import('..').AppStateAction} action
+ * @returns {import('..').AppState}
  */
 function appStateReducer(state, { action, payload }) {
   console.log("transitioning from %s to %s", state.name, action);
@@ -135,7 +135,7 @@ export default function App() {
   const { authState, logout } = React.useContext(OctokitContext);
 
   const [parameters, setParameters] = React.useState(
-    /** @type {null | import('../index.d.ts').Parameters} */
+    /** @type {null | import('..').Parameters} */
     (null)
   );
 
@@ -318,6 +318,7 @@ export default function App() {
           );
         })
         .then((data) => {
+          // @ts-expect-error
           const project = data.userOrOrganization.projectV2;
 
           const projectData = {
@@ -384,7 +385,7 @@ export default function App() {
       return;
     }
 
-    throw new Error(`Unhandled auth state: ${authState.type}`);
+    throw new Error("Unhandled auth state");
   }, [authState, parameters]);
 
   console.log({ appState });
@@ -482,7 +483,7 @@ export default function App() {
               Read access to project{" "}
               {appState.project && (
                 <Link href={appState.project.url}>
-                  #{projectNumber} {appState.project.name}
+                  #{projectNumber} {appState.project.title}
                 </Link>
               )}
             </ActionList.Item>
@@ -505,7 +506,7 @@ export default function App() {
               Write access to project{" "}
               {appState.project && (
                 <Link href={appState.project.url}>
-                  #{projectNumber} {appState.project.name}
+                  #{projectNumber} {appState.project.title}
                 </Link>
               )}
             </ActionList.Item>
