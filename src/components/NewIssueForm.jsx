@@ -82,7 +82,7 @@ export default function NewIssueForm({
 
   return (
     <ContentWrapper>
-      <Box sx={{ display: "grid", gridGap: 3 }}>
+      <Box sx={{ display: "grid", gap: 3 }}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl required>
             <FormControl.Label>Issue title</FormControl.Label>
