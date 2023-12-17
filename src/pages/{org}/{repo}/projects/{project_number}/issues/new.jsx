@@ -19,7 +19,7 @@ export default function NewIssuePage({
   projectName,
   projectFields,
 }) {
-  const { authState } = useContext(OctokitContext);
+  const { authState, logout } = useContext(OctokitContext);
   const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
   const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
 
@@ -81,7 +81,7 @@ export default function NewIssuePage({
 
   return (
     <>
-      <Nav />
+      <Nav avatarUrl={authState.user?.avatar_url} onLogout={logout} />
       <Box
         sx={{
           bg: "canvas.inset",
