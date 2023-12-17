@@ -132,7 +132,7 @@ function initAppState(parameters) {
 }
 
 export default function App() {
-  const { authState, logout } = React.useContext(OctokitContext);
+  const { authState } = React.useContext(OctokitContext);
 
   const [parameters, setParameters] = React.useState(
     /** @type {null | import('..').Parameters} */
