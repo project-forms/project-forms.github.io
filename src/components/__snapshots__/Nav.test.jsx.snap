@@ -1,126 +1,95 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`<Nav> > renders expected HTML 1`] = `
-{
-  "asFragment": [Function],
-  "baseElement": <body>
-    <div>
-      <header
-        class="Header-sc-1wu4agm-0 fCKyxE"
-      >
-        <div
-          class="Header__HeaderItem-sc-1wu4agm-1 hFzBrP"
-        >
-          <a
-            class="Header__HeaderLink-sc-1wu4agm-2 jjjuuj"
-            href="https://github.com/project-forms"
-          >
-            <svg
-              aria-hidden="true"
-              class="Octicon-sc-9kayk9-0 eoNnjt"
-              fill="currentColor"
-              focusable="false"
-              height="32"
-              role="img"
-              style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
-              viewBox="0 0 24 24"
-              width="32"
-            >
-              <path
-                d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25ZM9 9v11.5h11.25a.25.25 0 0 0 .25-.25V9Zm11.5-1.5V3.75a.25.25 0 0 0-.25-.25H9v4ZM3.5 9v11.25c0 .138.112.25.25.25H7.5V9Zm4-1.5v-4H3.75a.25.25 0 0 0-.25.25V7.5Z"
-              />
-            </svg>
-            <span>
-              Project Forms
-            </span>
-          </a>
-        </div>
-      </header>
-    </div>
-  </body>,
-  "container": <div>
-    <header
-      class="Header-sc-1wu4agm-0 fCKyxE"
+exports[`<Nav> > renders expected HTML when 'avatarURL' is not provided 1`] = `
+<DocumentFragment>
+  <header
+    class="Header-sc-1wu4agm-0 fCKyxE"
+  >
+    <div
+      class="Header__HeaderItem-sc-1wu4agm-1 hFzBrP"
     >
-      <div
-        class="Header__HeaderItem-sc-1wu4agm-1 hFzBrP"
+      <a
+        class="Header__HeaderLink-sc-1wu4agm-2 jjjuuj"
+        href="https://github.com/project-forms"
       >
-        <a
-          class="Header__HeaderLink-sc-1wu4agm-2 jjjuuj"
-          href="https://github.com/project-forms"
+        <svg
+          aria-hidden="true"
+          class="Octicon-sc-9kayk9-0 eoNnjt"
+          fill="currentColor"
+          focusable="false"
+          height="32"
+          role="img"
+          style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
+          viewBox="0 0 24 24"
+          width="32"
         >
-          <svg
-            aria-hidden="true"
-            class="Octicon-sc-9kayk9-0 eoNnjt"
-            fill="currentColor"
-            focusable="false"
-            height="32"
-            role="img"
-            style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
-            viewBox="0 0 24 24"
-            width="32"
-          >
-            <path
-              d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25ZM9 9v11.5h11.25a.25.25 0 0 0 .25-.25V9Zm11.5-1.5V3.75a.25.25 0 0 0-.25-.25H9v4ZM3.5 9v11.25c0 .138.112.25.25.25H7.5V9Zm4-1.5v-4H3.75a.25.25 0 0 0-.25.25V7.5Z"
-            />
-          </svg>
-          <span>
-            Project Forms
-          </span>
-        </a>
-      </div>
-    </header>
-  </div>,
-  "debug": [Function],
-  "findAllByAltText": [Function],
-  "findAllByDisplayValue": [Function],
-  "findAllByLabelText": [Function],
-  "findAllByPlaceholderText": [Function],
-  "findAllByRole": [Function],
-  "findAllByTestId": [Function],
-  "findAllByText": [Function],
-  "findAllByTitle": [Function],
-  "findByAltText": [Function],
-  "findByDisplayValue": [Function],
-  "findByLabelText": [Function],
-  "findByPlaceholderText": [Function],
-  "findByRole": [Function],
-  "findByTestId": [Function],
-  "findByText": [Function],
-  "findByTitle": [Function],
-  "getAllByAltText": [Function],
-  "getAllByDisplayValue": [Function],
-  "getAllByLabelText": [Function],
-  "getAllByPlaceholderText": [Function],
-  "getAllByRole": [Function],
-  "getAllByTestId": [Function],
-  "getAllByText": [Function],
-  "getAllByTitle": [Function],
-  "getByAltText": [Function],
-  "getByDisplayValue": [Function],
-  "getByLabelText": [Function],
-  "getByPlaceholderText": [Function],
-  "getByRole": [Function],
-  "getByTestId": [Function],
-  "getByText": [Function],
-  "getByTitle": [Function],
-  "queryAllByAltText": [Function],
-  "queryAllByDisplayValue": [Function],
-  "queryAllByLabelText": [Function],
-  "queryAllByPlaceholderText": [Function],
-  "queryAllByRole": [Function],
-  "queryAllByTestId": [Function],
-  "queryAllByText": [Function],
-  "queryAllByTitle": [Function],
-  "queryByAltText": [Function],
-  "queryByDisplayValue": [Function],
-  "queryByLabelText": [Function],
-  "queryByPlaceholderText": [Function],
-  "queryByRole": [Function],
-  "queryByTestId": [Function],
-  "queryByText": [Function],
-  "queryByTitle": [Function],
-  "rerender": [Function],
-  "unmount": [Function],
-}
+          <path
+            d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25ZM9 9v11.5h11.25a.25.25 0 0 0 .25-.25V9Zm11.5-1.5V3.75a.25.25 0 0 0-.25-.25H9v4ZM3.5 9v11.25c0 .138.112.25.25.25H7.5V9Zm4-1.5v-4H3.75a.25.25 0 0 0-.25.25V7.5Z"
+          />
+        </svg>
+        <span>
+          Project Forms
+        </span>
+      </a>
+    </div>
+  </header>
+</DocumentFragment>
+`;
+
+exports[`<Nav> > renders expected HTML when 'avatarURL' is provided 1`] = `
+<DocumentFragment>
+  <header
+    class="Header-sc-1wu4agm-0 fCKyxE"
+  >
+    <div
+      class="Header__HeaderItem-sc-1wu4agm-1 hFzBrP"
+    >
+      <a
+        class="Header__HeaderLink-sc-1wu4agm-2 jjjuuj"
+        href="https://github.com/project-forms"
+      >
+        <svg
+          aria-hidden="true"
+          class="Octicon-sc-9kayk9-0 eoNnjt"
+          fill="currentColor"
+          focusable="false"
+          height="32"
+          role="img"
+          style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
+          viewBox="0 0 24 24"
+          width="32"
+        >
+          <path
+            d="M2 3.75C2 2.784 2.784 2 3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25ZM9 9v11.5h11.25a.25.25 0 0 0 .25-.25V9Zm11.5-1.5V3.75a.25.25 0 0 0-.25-.25H9v4ZM3.5 9v11.25c0 .138.112.25.25.25H7.5V9Zm4-1.5v-4H3.75a.25.25 0 0 0-.25.25V7.5Z"
+          />
+        </svg>
+        <span>
+          Project Forms
+        </span>
+      </a>
+    </div>
+    <div
+      class="Header__HeaderItem-sc-1wu4agm-1 jJZXfG"
+    >
+      <button
+        aria-haspopup="true"
+        class="types__StyledButton-sc-ws60qy-0 ftBQuc"
+        data-component="IconButton"
+        data-no-visuals="true"
+        id="react-aria-:r0:"
+        tabindex="0"
+        type="button"
+      >
+        <img
+          alt=""
+          class="Avatar__StyledAvatar-sc-2lv0r8-0 fITXTM"
+          height="32"
+          size="32"
+          src="random-avatar.png"
+          width="32"
+        />
+      </button>
+    </div>
+  </header>
+</DocumentFragment>
 `;

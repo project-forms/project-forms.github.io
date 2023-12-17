@@ -7,11 +7,8 @@ import {
   StyledOcticon,
 } from "@primer/react";
 import { TableIcon } from "@primer/octicons-react";
-import useAuthState from "../hooks/use-auth-state";
 
-export default function Nav() {
-  const { authState, logout } = useAuthState();
-
+export default function Nav({ avatarUrl, onLogout }) {
   return (
     <Header>
       <Header.Item full>
@@ -20,21 +17,19 @@ export default function Nav() {
           <span>Project Forms</span>
         </Header.Link>
       </Header.Item>
-      {authState.user?.avatar_url && (
+      {avatarUrl && (
         <Header.Item>
           <ActionMenu>
             <ActionMenu.Anchor>
               <IconButton
                 sx={{ p: 0 }}
-                icon={() => (
-                  <Avatar src={authState.user.avatar_url} size={32} />
-                )}
+                icon={() => <Avatar src={avatarUrl} size={32} />}
                 variant="invisible"
               />
             </ActionMenu.Anchor>
 
             <ActionMenu.Overlay>
-              <ActionList onClick={logout}>
+              <ActionList onClick={onLogout}>
                 <ActionList.Item>Sign Out</ActionList.Item>
               </ActionList>
             </ActionMenu.Overlay>
