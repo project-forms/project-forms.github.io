@@ -144,12 +144,3 @@ export type Store<T> = {
   get: () => Promise<T | null | undefined>;
   set: (data: T | null) => Promise<void>;
 };
-
-export type NewIssuePageProps = {
-  owner: string;
-  repo: string;
-  projectNumber: number;
-  projectUrl: string;
-  projectName: string;
-  projectFields?: ProjectField[];
-};
