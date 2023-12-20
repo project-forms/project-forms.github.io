@@ -1,27 +1,336 @@
-import { useState, useContext } from "react";
-import { Box, Breadcrumbs, Heading, Link } from "@primer/react";
+import { useState, useContext, useEffect } from "react";
+import {
+  ActionList,
+  Box,
+  Breadcrumbs,
+  Heading,
+  Link,
+  Spinner,
+  StyledOcticon,
+  Text,
+} from "@primer/react";
 import Project from "github-project";
 
 import { OctokitContext } from "../../../../../../components/octokit-provider.js";
 import Nav from "../../../../../../components/Nav.jsx";
 import ContentWrapper from "../../../../../../components/ContentWrapper.jsx";
 import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
+import createStore from "../../../../../../lib/create-store.js";
+import { CheckCircleFillIcon, XCircleFillIcon } from "@primer/octicons-react";
+
+const REGEX_VALID_PATH =
+  /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/projects\/(\d+)\/issues\/new$/i;
+
+const SUPPORTED_PROJECT_FIELD_TYPES = [
+  "TEXT",
+  "NUMBER",
+  "DATE",
+  "SINGLE_SELECT",
+  // TODO: there is a problem with Iteration fields and github-project,
+  //       so for now we just remove the iteration field
+  // "ITERATION",
+];
+
+const VERIFY_ACCESS_QUERY = `
+  query verifyAccess($owner: String!, $repo: String!, $projectNumber: Int!) {
+    repository(owner: $owner, name: $repo) {
+      id
+    }
+    owner:repositoryOwner(login: $owner) {
+      ... on ProjectV2Owner {
+        project:projectV2(number: $projectNumber) {
+          title
+          url
+          viewerCanUpdate
+        }
+      }
+    }
+  }
+`;
+
+const GET_PROJECTS_WITH_ITEMS_QUERY = `
+  query getProjectWithItems($owner: String!, $number: Int!) {
+    userOrOrganization: repositoryOwner(login: $owner) {
+      ... on ProjectV2Owner {
+        projectV2(number: $number) {
+          title
+          url
+          fields(first: 50) {
+            nodes {
+              ... on ProjectV2FieldCommon {
+                id
+                dataType
+                name
+              }
+              ... on ProjectV2SingleSelectField {
+                options {
+                  id
+                  name
+                }
+              }
+              ... on ProjectV2IterationField {
+                configuration {
+                  iterations {
+                    id
+                    title
+                    duration
+                    startDate
+                  }
+                  completedIterations {
+                    id
+                    title
+                    duration
+                    startDate
+                  }
+                  duration
+                  startDay
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 /**
  * @param {import("../../../../../../..").NewIssuePageProps} props
  * @returns
  */
-export default function NewIssuePage({
-  owner,
-  repo,
-  projectNumber,
-  projectUrl,
-  projectName,
-  projectFields,
-}) {
+export default function NewIssuePage() {
+  // read out path parameters
+  const currentPath = location.pathname;
+
+  const matches = currentPath.match(REGEX_VALID_PATH);
+
+  if (!matches) {
+    throw new Error("Invalid path");
+  }
+
+  const [
+    // eslint-disable-next-line no-unused-vars
+    _,
+    owner,
+    repo,
+    projectNumberString,
+  ] = matches;
+  const parameters = {
+    owner,
+    repo,
+    projectNumber: Number(projectNumberString),
+  };
+
   const { authState, logout } = useContext(OctokitContext);
   const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
   const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
+  const [projectData, setProjectData] = useState(null);
+  const [accessError, setAccessError] = useState(null);
+  const [requestError, setRequestError] = useState(null);
+
+  /**
+   * @type {import("..").Store<import("..").StoreData>}
+   */
+  const store = createStore(currentPath);
+
+  // load form data from local store or remotely
+  useEffect(
+    () => {
+      store.get().then((data) => {
+        if (data) {
+          setProjectData(data);
+        }
+
+        authState.octokit
+          .graphql(VERIFY_ACCESS_QUERY, parameters)
+          .catch((error) => {
+            if (!error.response?.data?.data) {
+              throw error;
+            }
+
+            return error.response.data.data;
+          })
+          .then((data) => {
+            const hasRepoAccess = Boolean(data?.repository);
+            const hasProjectReadAccess = Boolean(data?.owner?.project);
+            const hasProjectWriteAccess = Boolean(
+              data?.owner?.project?.viewerCanUpdate
+            );
+
+            const hasAccessError = !hasRepoAccess || !hasProjectWriteAccess;
+            const access = {
+              hasRepoAccess,
+              hasProjectReadAccess,
+              hasProjectWriteAccess,
+            };
+
+            if (hasAccessError) {
+              setAccessError(access);
+              return;
+            }
+
+            // Retrieve all project fields and single select options
+            return authState.octokit.graphql(GET_PROJECTS_WITH_ITEMS_QUERY, {
+              owner: parameters.owner,
+              number: parameters.projectNumber,
+            });
+          })
+          .then((data) => {
+            // @ts-expect-error
+            const project = data.userOrOrganization.projectV2;
+
+            const projectData = {
+              title: project.title,
+              url: project.url,
+              fields: project.fields.nodes.reduce((fields, field) => {
+                if (!SUPPORTED_PROJECT_FIELD_TYPES.includes(field.dataType)) {
+                  return fields;
+                }
+
+                function iterationToOption(iteration) {
+                  return {
+                    id: iteration.id,
+                    name: iteration.id,
+                    humanName: `${iteration.title} (${iteration.duration} days from ${iteration.startDate}))`,
+                  };
+                }
+
+                return [
+                  ...fields,
+                  {
+                    id: field.id,
+                    name: field.name,
+                    type: field.dataType,
+                    options: field.options
+                      ? field.options
+                      : field.configuration
+                      ? [
+                          ...field.configuration.iterations.map(
+                            iterationToOption
+                          ),
+                          ...field.configuration.completedIterations.map(
+                            iterationToOption
+                          ),
+                        ]
+                      : undefined,
+                  },
+                ];
+              }, []),
+            };
+
+            setProjectData(projectData);
+            return store.set(projectData);
+          })
+          .catch((error) => {
+            const message = error.errors
+              ? error.errors[0].message
+              : error.message;
+
+            setRequestError(message);
+          });
+      });
+    },
+    // Note: adding `store` as dependency results in an infinite loop
+    []
+  );
+
+  if (requestError) {
+    return (
+      <Box m="4" justifyContent="center">
+        <Heading sx={{ mb: 4 }}>Request Error</Heading>
+        <Text>
+          {requestError.message}
+          <br />
+          <br />
+          If the problem persists, please let us know on{" "}
+          <Link href="https://github.com/project-forms/project-forms.github.io/issues">
+            GitHub
+          </Link>
+          .
+        </Text>
+      </Box>
+    );
+  }
+
+  if (accessError) {
+    const { owner, repo, projectNumber } = parameters;
+
+    return (
+      <Box m="4" justifyContent="center">
+        <Heading sx={{ mb: 4 }}>Access Error</Heading>
+
+        <ActionList>
+          <ActionList.Item>
+            <ActionList.LeadingVisual>
+              {accessError.hasRepoAccess ? (
+                <StyledOcticon
+                  icon={CheckCircleFillIcon}
+                  size={32}
+                  color="success"
+                />
+              ) : (
+                <StyledOcticon
+                  icon={XCircleFillIcon}
+                  size={32}
+                  color="danger"
+                />
+              )}
+            </ActionList.LeadingVisual>
+            access to{" "}
+            <Link
+              href={`https://github.com/${owner}/${repo}`}
+            >{`${owner}/${repo}`}</Link>
+          </ActionList.Item>
+          <ActionList.Item>
+            <ActionList.LeadingVisual>
+              {accessError.hasProjectReadAccess ? (
+                <StyledOcticon
+                  icon={CheckCircleFillIcon}
+                  size={32}
+                  color="success"
+                />
+              ) : (
+                <StyledOcticon
+                  icon={XCircleFillIcon}
+                  size={32}
+                  color="danger"
+                />
+              )}
+            </ActionList.LeadingVisual>
+            Read access to project{" "}
+            {projectData && (
+              <Link href={projectData.url}>
+                #{projectNumber} {projectData.title}
+              </Link>
+            )}
+          </ActionList.Item>
+          <ActionList.Item>
+            <ActionList.LeadingVisual>
+              {accessError.hasProjectWriteAccess ? (
+                <StyledOcticon
+                  icon={CheckCircleFillIcon}
+                  size={32}
+                  color="success"
+                />
+              ) : (
+                <StyledOcticon
+                  icon={XCircleFillIcon}
+                  size={32}
+                  color="danger"
+                />
+              )}
+            </ActionList.LeadingVisual>
+            Write access to project{" "}
+            {projectData && (
+              <Link href={projectData.url}>
+                #{projectNumber} {projectData.title}
+              </Link>
+            )}
+          </ActionList.Item>
+        </ActionList>
+      </Box>
+    );
+  }
 
   /**
    * @param {Record<string, unknown>} data
@@ -56,7 +365,7 @@ export default function NewIssuePage({
     const project = new Project({
       octokit: authState.octokit,
       owner: owner,
-      number: projectNumber,
+      number: parameters.projectNumber,
       fields,
     });
 
@@ -68,16 +377,18 @@ export default function NewIssuePage({
       throw error;
     }
 
-    console.log("Issue added to project: %s", projectUrl);
+    console.log("Issue added to project: %s", projectData?.url);
 
     setSubmittedIssueUrl(issue.html_url);
   }
 
-  // TODO: there is a problem with Iteration fields and github-project,
-  // so for now we just remove the iteration field
-  const projectFieldsWorkaround = projectFields.filter(
-    (field) => field.type !== "ITERATION"
-  );
+  if (!projectData) {
+    return (
+      <Box mt="4" display="flex" justifyContent="center">
+        <Spinner />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -103,8 +414,8 @@ export default function NewIssuePage({
           </Breadcrumbs>
           <Heading sx={{ fontSize: 2 }}>
             Submit for to project{" "}
-            <Link href={projectUrl}>
-              #{projectNumber} {projectName}
+            <Link href={projectData?.url}>
+              #{parameters.projectNumber} {projectData?.title}
             </Link>
           </Heading>
         </ContentWrapper>
@@ -112,7 +423,7 @@ export default function NewIssuePage({
       <NewIssueForm
         onSubmit={onSubmit}
         submittedIssueUrl={submittedIssueUrl}
-        projectFields={projectFieldsWorkaround}
+        projectFields={projectData?.fields}
         isSubmittingIssue={isSubmittingIssue}
       />
     </>
