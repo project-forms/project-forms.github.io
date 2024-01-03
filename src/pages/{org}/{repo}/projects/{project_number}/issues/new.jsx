@@ -7,9 +7,9 @@ import {
   Link,
   Spinner,
   StyledOcticon,
-  Text,
 } from "@primer/react";
 import Project from "github-project";
+import { useErrorBoundary } from "react-error-boundary";
 
 import { OctokitContext } from "../../../../../../components/octokit-provider.js";
 import Nav from "../../../../../../components/Nav.jsx";
@@ -99,6 +99,8 @@ const GET_PROJECTS_WITH_ITEMS_QUERY = `
  * @returns
  */
 export default function NewIssuePage() {
+  const { showBoundary } = useErrorBoundary();
+
   // read out path parameters
   const currentPath = location.pathname;
 
@@ -126,7 +128,6 @@ export default function NewIssuePage() {
   const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
   const [projectData, setProjectData] = useState(null);
   const [accessError, setAccessError] = useState(null);
-  const [requestError, setRequestError] = useState(null);
 
   /**
    * @type {import("..").Store<import("..").StoreData>}
@@ -145,7 +146,8 @@ export default function NewIssuePage() {
           .graphql(VERIFY_ACCESS_QUERY, parameters)
           .catch((error) => {
             if (!error.response?.data?.data) {
-              throw error;
+              showBoundary(error);
+              return;
             }
 
             return error.response.data.data;
@@ -226,31 +228,13 @@ export default function NewIssuePage() {
               ? error.errors[0].message
               : error.message;
 
-            setRequestError(message);
+            showBoundary(Error(message));
           });
       });
     },
     // Note: adding `store` as dependency results in an infinite loop
     []
   );
-
-  if (requestError) {
-    return (
-      <Box m="4" justifyContent="center">
-        <Heading sx={{ mb: 4 }}>Request Error</Heading>
-        <Text>
-          {requestError.message}
-          <br />
-          <br />
-          If the problem persists, please let us know on{" "}
-          <Link href="https://github.com/project-forms/project-forms.github.io/issues">
-            GitHub
-          </Link>
-          .
-        </Text>
-      </Box>
-    );
-  }
 
   if (accessError) {
     const { owner, repo, projectNumber } = parameters;

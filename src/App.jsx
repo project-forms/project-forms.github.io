@@ -1,8 +1,17 @@
 // @ts-check
 
 import { useContext } from "react";
-import { Box, Button, Spinner, StyledOcticon, Text } from "@primer/react";
+import {
+  Box,
+  Button,
+  Heading,
+  Link,
+  Spinner,
+  StyledOcticon,
+  Text,
+} from "@primer/react";
 import { MarkGithubIcon, TableIcon } from "@primer/octicons-react";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { OctokitContext } from "./components/octokit-provider.js";
 import NewIssuePage from "./pages/{org}/{repo}/projects/{project_number}/issues/new.jsx";
@@ -75,5 +84,27 @@ export default function App() {
     throw new Error(`Unhandled authState.type: ${authState.type}`);
   }
 
-  return <NewIssuePage />;
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <NewIssuePage />
+    </ErrorBoundary>
+  );
+}
+
+function ErrorFallback({ error /*, resetErrorBoundary */ }) {
+  return (
+    <Box m="4" justifyContent="center">
+      <Heading sx={{ mb: 4 }}>An error occured</Heading>
+      <Text>
+        {error.message}
+        <br />
+        <br />
+        If the problem persists, please let us know on{" "}
+        <Link href="https://github.com/project-forms/project-forms.github.io/issues">
+          GitHub
+        </Link>
+        .
+      </Text>
+    </Box>
+  );
 }
