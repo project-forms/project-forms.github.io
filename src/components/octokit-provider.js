@@ -104,7 +104,7 @@ export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
         await logout(octokit, setAuthState, store);
       }
     });
-  }, [setAuthState]);
+  }, [setAuthState, store]);
 
   return createElement(
     OctokitContext.Provider,
