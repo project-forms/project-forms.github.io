@@ -15,8 +15,6 @@ export default function App() {
 
   const currentPath = location.pathname;
 
-  console.log({ authState });
-
   if (currentPath === "/") {
     location.pathname = `project-forms/demo/projects/1/issues/new`;
     return;
