@@ -78,6 +78,13 @@ export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
 
   // load initial auth state from store
   useEffect(() => {
+    console.log("Check for `code` query param");
+    const code = new URL(location.href).searchParams.get("code");
+    if (code) {
+      handleCodeInUrl(store, setAuthState, code);
+      return;
+    }
+
     console.log("load initial auth state from store");
     loadData(store).then(async (data) => {
       if (!data) {
@@ -97,31 +104,26 @@ export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
         await logout(octokit, setAuthState, store);
       }
     });
-  }, []);
-
-  // Check for `code` query param
-  useEffect(() => {
-    console.log("Check for `code` query param");
-    handleCodeInUrl(store, setAuthState);
   }, [setAuthState]);
 
-  return createElement(OctokitContext.Provider, {
-    value: {
-      authState,
-      logout: exportedLogout,
+  return createElement(
+    OctokitContext.Provider,
+    {
+      value: {
+        authState,
+        logout: exportedLogout,
+      },
     },
-    children,
-  });
+    children
+  );
 };
 
 /**
  * @param {import('./octokit-provider').Store} store
  * @param {React.Dispatch<React.SetStateAction<import('./octokit-provider').AuthState>>} setAuthState
+ * @param {string} code
  */
-async function handleCodeInUrl(store, setAuthState) {
-  const code = new URL(location.href).searchParams.get("code");
-  if (!code) return;
-
+async function handleCodeInUrl(store, setAuthState, code) {
   // remove ?code=... from URL
   const path =
     location.pathname +
