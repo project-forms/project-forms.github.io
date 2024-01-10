@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { render } from "@testing-library/react";
 import { BaseStyles, ThemeProvider } from "@primer/react";
+import { http, HttpResponse } from "msw";
 
 import { OctokitProvider } from "../components/octokit-provider.js";
 import App from "../App.jsx";
@@ -20,6 +21,16 @@ describe("App", () => {
       href: "http://localhost.test/project-forms/demo/projects/1/issues/new?code=123",
     };
 
+    http.post(
+      "/login/oauth/access_token",
+      // The function below is a "resolver" function.
+      // It accepts a bunch of information about the
+      // intercepted request, and decides how to handle it.
+      () => {
+        return HttpResponse.json({ token: "secret_123" });
+      }
+    );
+
     const { getByText } = render(
       <ThemeProvider>
         <BaseStyles>
@@ -29,6 +40,8 @@ describe("App", () => {
         </BaseStyles>
       </ThemeProvider>
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // TODO: interecept requests
     //       1. exchange token
