@@ -3,8 +3,10 @@
 import { useContext } from "react";
 import { Box, Button, Spinner, StyledOcticon, Text } from "@primer/react";
 import { MarkGithubIcon, TableIcon } from "@primer/octicons-react";
+import { ErrorBoundary } from "react-error-boundary";
 
 import { OctokitContext } from "./components/octokit-provider.js";
+import ErrorFallback from "./components/ErrorFallback.jsx";
 import NewIssuePage from "./pages/{org}/{repo}/projects/{project_number}/issues/new.jsx";
 
 // @ts-expect-error - look into how to define env vars in Vite
@@ -75,5 +77,9 @@ export default function App() {
     throw new Error(`Unhandled authState.type: ${authState.type}`);
   }
 
-  return <NewIssuePage />;
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <NewIssuePage />
+    </ErrorBoundary>
+  );
 }
