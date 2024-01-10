@@ -64,10 +64,14 @@ let INITIAL_AUTH_STATE = {
 };
 
 /**
- * @param {React.PropsWithChildren & {store: import("./octokit-provider").Store}} props
+ * @param {React.PropsWithChildren & {store: import("./octokit-provider").Store, location: Location}} props
  * @returns {ReturnType<React.createElement>}
  */
-export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
+export const OctokitProvider = ({
+  children,
+  store = DEFAULT_STORE,
+  location = window.location,
+}) => {
   const [authState, setAuthState] = useState(INITIAL_AUTH_STATE);
 
   const exportedLogout = useCallback(async () => {

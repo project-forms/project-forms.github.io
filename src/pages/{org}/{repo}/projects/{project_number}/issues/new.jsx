@@ -397,7 +397,7 @@ export default function NewIssuePage() {
             </Breadcrumbs.Item>
           </Breadcrumbs>
           <Heading sx={{ fontSize: 2 }}>
-            Submit for to project{" "}
+            Submit to project{" "}
             <Link href={projectData?.url}>
               #{parameters.projectNumber} {projectData?.title}
             </Link>
