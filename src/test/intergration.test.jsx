@@ -1,12 +1,33 @@
-import { describe, expect, test } from "vitest";
-import { render } from "@testing-library/react";
+import { describe, expect, test, beforeAll, afterAll, afterEach } from "vitest";
+import { render, waitFor } from "@testing-library/react";
 import { BaseStyles, ThemeProvider } from "@primer/react";
-import { http, HttpResponse } from "msw";
-
+import { setupServer } from "msw/node";
+import { http, HttpResponse, graphql } from "msw";
 import { OctokitProvider } from "../components/octokit-provider.js";
 import App from "../App.jsx";
+import UserResponse from "./fixtures/api.github.com/user.json";
 
+const server = setupServer();
+const githubGraphQL = graphql.link("https://api.github.com/graphql");
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
 describe("App", () => {
+  beforeAll(() => {
+    window.ResizeObserver = ResizeObserver;
+    server.listen();
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
+  });
+
   test("/project-forms/demo/projects/1/issues/new?code=123", async () => {
     const mockLocation = {
       pathname: "/project-forms/demo/projects/1/issues/new",
@@ -21,34 +42,81 @@ describe("App", () => {
       href: "http://localhost.test/project-forms/demo/projects/1/issues/new?code=123",
     };
 
-    http.post(
-      "/login/oauth/access_token",
-      // The function below is a "resolver" function.
-      // It accepts a bunch of information about the
-      // intercepted request, and decides how to handle it.
-      () => {
-        return HttpResponse.json({ token: "secret_123" });
-      }
+    server.use(
+      http.get("https://api.github.com/user", () => {
+        return HttpResponse.json(UserResponse);
+      }),
+      http.post("/api/github/oauth/token", (request, body) => {
+        return HttpResponse.json({
+          authentication: {
+            token: "secret_123",
+          },
+        });
+      }),
+      githubGraphQL.query("verifyAccess", () => {
+        return HttpResponse.json({
+          data: {
+            repository: "randomRepo",
+            owner: {
+              project: {
+                viewerCanUpdate: true,
+              },
+            },
+          },
+        });
+      }),
+      githubGraphQL.query("getProjectWithItems", () => {
+        return HttpResponse.json({
+          data: {
+            userOrOrganization: {
+              projectV2: {
+                title: "My Project",
+                url: "Project URL",
+                fields: {
+                  nodes: [
+                    {
+                      name: "Field 1",
+                      dataType: "text",
+                      id: "1",
+                    },
+                    {
+                      name: "Field 2",
+                      dataType: "text",
+                      id: "2",
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        });
+      })
     );
 
-    const { getByText } = render(
+    const { asFragment, getByText, debug } = render(
       <ThemeProvider>
         <BaseStyles>
-          <OctokitProvider>
+          <OctokitProvider location={mockLocation}>
             <App location={mockLocation} />
           </OctokitProvider>
         </BaseStyles>
       </ThemeProvider>
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     // TODO: interecept requests
     //       1. exchange token
     //       2. load project
 
-    const title = getByText("Submit to project #1 My Project");
+    await waitFor(
+      () => {
+        const title = getByText(/My Project/);
+        expect(title).not.toBeNull();
+      },
+      { timeout: 1000 }
+    );
 
-    expect(title).not.toBeNull();
+    //debug();
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });
