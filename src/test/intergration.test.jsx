@@ -112,8 +112,6 @@ describe("App", () => {
       { timeout: 1000 }
     );
 
-    //debug();
-
     expect(asFragment()).toMatchSnapshot();
   });
 });
