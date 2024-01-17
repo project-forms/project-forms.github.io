@@ -104,10 +104,6 @@ describe("App", () => {
       </ThemeProvider>
     );
 
-    // TODO: interecept requests
-    //       1. exchange token
-    //       2. load project
-
     await waitFor(
       () => {
         const title = getByText(/My Project/);
