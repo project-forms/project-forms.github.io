@@ -11,7 +11,9 @@
     "vite:build": "vite build",
     "postvite:build": "cp _redirects _site/_redirects & cp _site/index.html _site/404.html",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui"
   },
   "keywords": [],
   "author": "Gregor Martynus (https://github.com/gr2m)",
