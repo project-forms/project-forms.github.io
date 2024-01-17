@@ -94,7 +94,7 @@ describe("App", () => {
       })
     );
 
-    const { asFragment, getByText, debug } = render(
+    const { asFragment, getByText } = render(
       <ThemeProvider>
         <BaseStyles>
           <OctokitProvider location={mockLocation}>
