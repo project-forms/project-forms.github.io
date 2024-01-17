@@ -147,21 +147,18 @@ async function handleCodeInUrl(store, setAuthState, code, location) {
  * @returns Promise<string | null>
  */
 async function getTokenFromCode(code, location) {
-  try {
-    const response = await fetch(
-      `${backendBaseUrl || location.origin}/api/github/oauth/token`,
-      {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ code }),
-      }
-    );
-    const { authentication } = await response.json();
-    // TODO - store authentication.refreshToken
-    return authentication.token;
-  } catch (e) {
-    return null;
-  }
+  const response = await fetch(
+    `${backendBaseUrl || location.origin}/api/github/oauth/token`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ code }),
+    }
+  );
+  const responseBody = await response.json();
+  const { authentication } = responseBody;
+  // TODO - store authentication.refreshToken
+  return authentication.token;
 }

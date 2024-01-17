@@ -32,6 +32,7 @@ describe("App", () => {
   test("/project-forms/demo/projects/1/issues/new?code=123", async () => {
     const mockLocation = {
       pathname: "/project-forms/demo/projects/1/issues/new",
+      origin: "http://localhost.test",
       search: "?code=123",
       searchParams: {
         get: (key) => {
@@ -47,14 +48,29 @@ describe("App", () => {
       http.get("https://api.github.com/user", () => {
         return HttpResponse.json(UserResponse);
       }),
-      http.post("/api/github/oauth/token", (request, body) => {
-        return HttpResponse.json({
-          authentication: {
-            token: "secret_123",
-          },
+
+      http.post(
+        "http://localhost.test/api/github/oauth/token",
+        async ({ request }) => {
+          const requestBody = await request.json();
+          expect(requestBody).toStrictEqual({
+            code: "123",
+          });
+
+          return HttpResponse.json({
+            authentication: {
+              token: "secret_123",
+            },
+          });
+        }
+      ),
+      githubGraphQL.query("verifyAccess", ({ variables }) => {
+        expect(variables).toStrictEqual({
+          owner: "project-forms",
+          repo: "demo",
+          projectNumber: 1,
         });
-      }),
-      githubGraphQL.query("verifyAccess", () => {
+
         return HttpResponse.json({
           data: {
             repository: "randomRepo",
@@ -66,7 +82,12 @@ describe("App", () => {
           },
         });
       }),
-      githubGraphQL.query("getProjectWithItems", () => {
+      githubGraphQL.query("getProjectWithItems", ({ variables }) => {
+        expect(variables).toStrictEqual({
+          owner: "project-forms",
+          number: 1,
+        });
+
         return HttpResponse.json({
           data: {
             userOrOrganization: {
