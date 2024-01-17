@@ -16,6 +16,7 @@ class ResizeObserver {
 }
 describe("App", () => {
   beforeAll(() => {
+    // It seems like Primer components rely on the existence of `window.ResizeObserver` and it's not (properly) mocked by JS Dom
     window.ResizeObserver = ResizeObserver;
     server.listen();
   });
