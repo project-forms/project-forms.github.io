@@ -18,6 +18,17 @@ import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
 import createStore from "../../../../../../lib/create-store.js";
 import { CheckCircleFillIcon, XCircleFillIcon } from "@primer/octicons-react";
 
+let storeData = Promise.resolve(null);
+/** @type {import('./octokit-provider').Store} */
+let DEFAULT_STORE = {
+  get() {
+    return storeData;
+  },
+  set(data) {
+    storeData = Promise.resolve(data);
+  },
+};
+
 const REGEX_VALID_PATH =
   /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/projects\/(\d+)\/issues\/new$/i;
 
@@ -132,7 +143,9 @@ export default function NewIssuePage() {
   /**
    * @type {import("..").Store<import("..").StoreData>}
    */
-  const store = createStore(currentPath);
+
+  const store =
+    process.env.NODE_ENV === "test" ? DEFAULT_STORE : createStore(currentPath);
 
   // load form data from local store or remotely
   useEffect(
@@ -397,7 +410,7 @@ export default function NewIssuePage() {
             </Breadcrumbs.Item>
           </Breadcrumbs>
           <Heading sx={{ fontSize: 2 }}>
-            Submit for to project{" "}
+            Submit to project{" "}
             <Link href={projectData?.url}>
               #{parameters.projectNumber} {projectData?.title}
             </Link>
