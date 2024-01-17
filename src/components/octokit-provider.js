@@ -64,10 +64,14 @@ let INITIAL_AUTH_STATE = {
 };
 
 /**
- * @param {React.PropsWithChildren & {store: import("./octokit-provider").Store}} props
+ * @param {React.PropsWithChildren & {store: import("./octokit-provider").Store, location: Location}} props
  * @returns {ReturnType<React.createElement>}
  */
-export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
+export const OctokitProvider = ({
+  children,
+  store = DEFAULT_STORE,
+  location = window.location,
+}) => {
   const [authState, setAuthState] = useState(INITIAL_AUTH_STATE);
 
   const exportedLogout = useCallback(async () => {
@@ -76,10 +80,9 @@ export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
 
   // load initial auth state from store
   useEffect(() => {
-    console.log("Check for `code` query param");
     const code = new URL(location.href).searchParams.get("code");
     if (code) {
-      handleCodeInUrl(store, setAuthState, code);
+      handleCodeInUrl(store, setAuthState, code, location);
       return;
     }
 
@@ -121,7 +124,7 @@ export const OctokitProvider = ({ children, store = DEFAULT_STORE }) => {
  * @param {React.Dispatch<React.SetStateAction<import('./octokit-provider').AuthState>>} setAuthState
  * @param {string} code
  */
-async function handleCodeInUrl(store, setAuthState, code) {
+async function handleCodeInUrl(store, setAuthState, code, location) {
   // remove ?code=... from URL
   const path =
     location.pathname +
@@ -129,7 +132,7 @@ async function handleCodeInUrl(store, setAuthState, code) {
   history.replaceState({}, "", path);
 
   setAuthState({ type: "loading", octokit: new Octokit() });
-  const token = await getTokenFromCode(code);
+  const token = await getTokenFromCode(code, location);
   const octokit = new Octokit({ auth: token });
 
   try {
@@ -143,19 +146,19 @@ async function handleCodeInUrl(store, setAuthState, code) {
  * @param {string} code
  * @returns Promise<string | null>
  */
-async function getTokenFromCode(code) {
-  try {
-    const response = await fetch(`${backendBaseUrl}/api/github/oauth/token`, {
+async function getTokenFromCode(code, location) {
+  const response = await fetch(
+    `${backendBaseUrl || location.origin}/api/github/oauth/token`,
+    {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
       body: JSON.stringify({ code }),
-    });
-    const { authentication } = await response.json();
-    // TODO - store authentication.refreshToken
-    return authentication.token;
-  } catch (e) {
-    return null;
-  }
+    }
+  );
+  const responseBody = await response.json();
+  const { authentication } = responseBody;
+  // TODO - store authentication.refreshToken
+  return authentication.token;
 }

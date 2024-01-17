@@ -12,7 +12,7 @@ import NewIssuePage from "./pages/{org}/{repo}/projects/{project_number}/issues/
 // @ts-expect-error - look into how to define env vars in Vite
 const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
 
-export default function App() {
+export default function App({ location = window.location } = {}) {
   const { authState } = useContext(OctokitContext);
 
   const currentPath = location.pathname;
