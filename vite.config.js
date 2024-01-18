@@ -9,6 +9,17 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.js"],
     restoreMocks: true,
+    // https://vitest.dev/config/#exclude
+    exclude: [
+      // default
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/cypress/**",
+      "**/.{idea,git,cache,output,temp}/**",
+      "**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*",
+      // ignore end-to-end tests
+      "test/*.spec.js",
+    ],
   },
   plugins: [react()],
   build: {
