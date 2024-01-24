@@ -1,10 +1,18 @@
-import { describe, expect, test, beforeAll, afterAll, afterEach } from "vitest";
+import {
+  describe,
+  expect,
+  test,
+  beforeAll,
+  afterAll,
+  afterEach,
+  vi,
+} from "vitest";
 import { render, waitFor } from "@testing-library/react";
 import { BaseStyles, ThemeProvider } from "@primer/react";
 import { setupServer } from "msw/node";
 import { http, HttpResponse, graphql } from "msw";
 import { OctokitProvider } from "../components/octokit-provider.js";
-import App from "../App.jsx";
+import Root from "../root.jsx";
 import UserResponse from "./fixtures/api.github.com/user.json";
 
 const server = setupServer();
@@ -17,7 +25,25 @@ class ResizeObserver {
 describe("App", () => {
   beforeAll(() => {
     // It seems like Primer components rely on the existence of `window.ResizeObserver` and it's not (properly) mocked by JS Dom
+    // TODO try this instead: vi.stubGlobal("ResizeObserver", ResizeObserver)
     window.ResizeObserver = ResizeObserver;
+
+    // mock local store
+    vi.mock("../lib/create-store.js", () => {
+      let storeData = {};
+
+      return {
+        default: () => ({
+          get() {
+            return storeData;
+          },
+          set(data) {
+            storeData = data;
+          },
+        }),
+      };
+    });
+
     server.listen();
   });
 
@@ -115,15 +141,7 @@ describe("App", () => {
       })
     );
 
-    const { asFragment, getByText } = render(
-      <ThemeProvider>
-        <BaseStyles>
-          <OctokitProvider location={mockLocation}>
-            <App location={mockLocation} />
-          </OctokitProvider>
-        </BaseStyles>
-      </ThemeProvider>
-    );
+    const { asFragment, getByText } = render(<Root />);
 
     await waitFor(
       () => {

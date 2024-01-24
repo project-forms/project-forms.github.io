@@ -1,3 +1,4 @@
+// @ts-check
 import { useState, useContext, useEffect } from "react";
 import {
   ActionList,
@@ -11,15 +12,18 @@ import {
 import Project from "github-project";
 import { useErrorBoundary } from "react-error-boundary";
 
-import { OctokitContext } from "../../../../../../components/octokit-provider.js";
-import Nav from "../../../../../../components/Nav.jsx";
-import ContentWrapper from "../../../../../../components/ContentWrapper.jsx";
-import NewIssueForm from "../../../../../../components/NewIssueForm.jsx";
-import createStore from "../../../../../../lib/create-store.js";
+import { OctokitContext } from "../components/octokit-provider.js";
+import Nav from "../components/Nav.jsx";
+import ContentWrapper from "../components/ContentWrapper.jsx";
+import NewIssueForm from "../components/NewIssueForm.jsx";
+import createStore from "../lib/create-store.js";
 import { CheckCircleFillIcon, XCircleFillIcon } from "@primer/octicons-react";
+import { useNavigate } from "react-router-dom";
+
+// TODO: rely on 'loaders' and 'actions'
 
 let storeData = Promise.resolve(null);
-/** @type {import('./octokit-provider').Store} */
+/** @type {import('../components/octokit-provider').Store} */
 let DEFAULT_STORE = {
   get() {
     return storeData;
@@ -106,7 +110,7 @@ const GET_PROJECTS_WITH_ITEMS_QUERY = `
 `;
 
 /**
- * @param {import("../../../../../../..").NewIssuePageProps} props
+ * @param {import("../..").NewIssuePageProps} props
  * @returns
  */
 export default function NewIssuePage() {
@@ -139,6 +143,11 @@ export default function NewIssuePage() {
   const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
   const [projectData, setProjectData] = useState(null);
   const [accessError, setAccessError] = useState(null);
+  const navigate = useNavigate();
+
+  if (authState.type === "unauthenticated") {
+    navigate("/login");
+  }
 
   /**
    * @type {import("..").Store<import("..").StoreData>}
@@ -150,6 +159,8 @@ export default function NewIssuePage() {
   // load form data from local store or remotely
   useEffect(
     () => {
+      if (authState.type !== "authenticated") return;
+
       store.get().then((data) => {
         if (data) {
           setProjectData(data);
@@ -246,7 +257,7 @@ export default function NewIssuePage() {
       });
     },
     // Note: adding `store` as dependency results in an infinite loop
-    []
+    [authState]
   );
 
   if (accessError) {
@@ -389,7 +400,13 @@ export default function NewIssuePage() {
 
   return (
     <>
-      <Nav avatarUrl={authState.user?.avatar_url} onLogout={logout} />
+      <Nav
+        avatarUrl={authState.user?.avatar_url}
+        onLogout={() => {
+          logout();
+          navigate("/login");
+        }}
+      />
       <Box
         sx={{
           bg: "canvas.inset",
