@@ -159,6 +159,8 @@ export default function NewIssuePage() {
   // load form data from local store or remotely
   useEffect(
     () => {
+      if (authState.type !== "authenticated") return;
+
       store.get().then((data) => {
         if (data) {
           setProjectData(data);
@@ -255,7 +257,7 @@ export default function NewIssuePage() {
       });
     },
     // Note: adding `store` as dependency results in an infinite loop
-    []
+    [authState]
   );
 
   if (accessError) {
