@@ -11,6 +11,10 @@ https://github.com/project-forms/project-forms.github.io/assets/39992/21868308-3
 [![screenshot of form design on Figma](https://github.com/project-forms/project-forms.github.io/assets/39992/d3a73f28-bd71-4ad7-912d-661b34b9e6ff)
 ](https://www.figma.com/file/eS0xVPdIZY56Q0uhUuMLBS/Design-for-project-forms%2Fproject-forms.github.io%231?type=design&node-id=0%3A1&t=3WVU9k8mNYJTzsAY-1)
 
+## Contributing
+
+[CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## License
 
 [ISC](LICENSE)
