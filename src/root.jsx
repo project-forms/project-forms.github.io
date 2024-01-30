@@ -26,7 +26,7 @@ export default function Root() {
           element: <Login />,
         },
         {
-          path: "/project-forms/:repo/projects/:project_number/issues/new",
+          path: "/:owner/:repo/projects/:project_number/issues/new",
           element: (
             <ErrorBoundary FallbackComponent={ErrorFallback}>
               <NewIssueForm />
