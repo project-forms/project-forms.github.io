@@ -5,6 +5,8 @@ import { MarkGithubIcon, TableIcon } from "@primer/octicons-react";
 
 // @ts-expect-error - look into how to define env vars in Vite
 const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
+// @ts-expect-error - look into how to define env vars in Vite
+const frontendBaseUrl = import.meta.env.VITE_FRONTEND_BASE_URL || "";
 
 export default function Login() {
   return (
@@ -33,7 +35,7 @@ export default function Login() {
           size="large"
           leadingIcon={MarkGithubIcon}
           as="a"
-          href={`${backendBaseUrl}/api/github/oauth/login?redirectUrl=${backendBaseUrl}`}
+          href={`${backendBaseUrl}/api/github/oauth/login?redirectUrl=${frontendBaseUrl}`}
         >
           Log In With GitHub
         </Button>
