@@ -33,7 +33,7 @@ export default function Login() {
           size="large"
           leadingIcon={MarkGithubIcon}
           as="a"
-          href={`${backendBaseUrl}/api/github/oauth/login?redirectUrl=${`http://localhost:8888`}`}
+          href={`${backendBaseUrl}/api/github/oauth/login?redirectUrl=${backendBaseUrl}`}
         >
           Log In With GitHub
         </Button>
