@@ -18,7 +18,7 @@ import ContentWrapper from "../components/ContentWrapper.jsx";
 import NewIssueForm from "../components/NewIssueForm.jsx";
 import createStore from "../lib/create-store.js";
 import { CheckCircleFillIcon, XCircleFillIcon } from "@primer/octicons-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // TODO: rely on 'loaders' and 'actions'
 
@@ -32,9 +32,6 @@ let DEFAULT_STORE = {
     storeData = Promise.resolve(data);
   },
 };
-
-const REGEX_VALID_PATH =
-  /^\/([a-z0-9-]+)\/([a-z0-9-]+)\/projects\/(\d+)\/issues\/new$/i;
 
 const SUPPORTED_PROJECT_FIELD_TYPES = [
   "TEXT",
@@ -115,23 +112,8 @@ const GET_PROJECTS_WITH_ITEMS_QUERY = `
  */
 export default function NewIssuePage() {
   const { showBoundary } = useErrorBoundary();
+  const { owner, repo, project_number: projectNumberString } = useParams();
 
-  // read out path parameters
-  const currentPath = location.pathname;
-
-  const matches = currentPath.match(REGEX_VALID_PATH);
-
-  if (!matches) {
-    throw new Error("Invalid path");
-  }
-
-  const [
-    // eslint-disable-next-line no-unused-vars
-    _,
-    owner,
-    repo,
-    projectNumberString,
-  ] = matches;
   const parameters = {
     owner,
     repo,
@@ -154,7 +136,9 @@ export default function NewIssuePage() {
    */
 
   const store =
-    process.env.NODE_ENV === "test" ? DEFAULT_STORE : createStore(currentPath);
+    process.env.NODE_ENV === "test"
+      ? DEFAULT_STORE
+      : createStore(location.pathname);
 
   // load form data from local store or remotely
   useEffect(
