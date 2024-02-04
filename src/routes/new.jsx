@@ -1,37 +1,26 @@
 // @ts-check
-import { useState, useContext, useEffect } from "react";
+import { useState } from "react";
 import {
   ActionList,
   Box,
   Breadcrumbs,
   Heading,
   Link,
-  Spinner,
   StyledOcticon,
 } from "@primer/react";
 import Project from "github-project";
-import { useErrorBoundary } from "react-error-boundary";
-
-import { OctokitContext } from "../components/octokit-provider.js";
 import Nav from "../components/Nav.jsx";
 import ContentWrapper from "../components/ContentWrapper.jsx";
 import NewIssueForm from "../components/NewIssueForm.jsx";
 import createStore from "../lib/create-store.js";
 import { CheckCircleFillIcon, XCircleFillIcon } from "@primer/octicons-react";
-import { useNavigate, useParams } from "react-router-dom";
-
-// TODO: rely on 'loaders' and 'actions'
-
-let storeData = Promise.resolve(null);
-/** @type {import('../components/octokit-provider').Store} */
-let DEFAULT_STORE = {
-  get() {
-    return storeData;
-  },
-  set(data) {
-    storeData = Promise.resolve(data);
-  },
-};
+import {
+  useNavigate,
+  useParams,
+  useLoaderData,
+  redirect,
+} from "react-router-dom";
+import { Octokit } from "@octokit-next/core";
 
 const SUPPORTED_PROJECT_FIELD_TYPES = [
   "TEXT",
@@ -106,12 +95,113 @@ const GET_PROJECTS_WITH_ITEMS_QUERY = `
   }
 `;
 
-/**
- * @param {import("../..").NewIssuePageProps} props
- * @returns
- */
+async function getTokenFromCookie() {
+  return await createStore("token").get();
+}
+
+export const loader = async ({ params }) => {
+  const { owner, repo, project_number: projectNumberString } = params;
+
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return redirect("/login");
+  }
+
+  try {
+    const octokit = new Octokit({ auth: token });
+
+    const parameters = {
+      owner,
+      repo,
+      projectNumber: Number(projectNumberString),
+    };
+
+    try {
+      let data = await octokit.graphql(VERIFY_ACCESS_QUERY, parameters);
+
+      const hasRepoAccess = Boolean(data?.repository);
+      const hasProjectReadAccess = Boolean(data?.owner?.project);
+      const hasProjectWriteAccess = Boolean(
+        data?.owner?.project?.viewerCanUpdate
+      );
+
+      const hasAccessError = !hasRepoAccess || !hasProjectWriteAccess;
+      const access = {
+        hasRepoAccess,
+        hasProjectReadAccess,
+        hasProjectWriteAccess,
+      };
+
+      if (hasAccessError) {
+        throw new Error(JSON.stringify(access));
+      }
+    } catch (error) {
+      if (!error.response?.data?.data) {
+        throw error;
+      }
+
+      throw new Error(error.response.data.data);
+    }
+
+    try {
+      const data = await octokit.graphql(GET_PROJECTS_WITH_ITEMS_QUERY, {
+        owner: parameters.owner,
+        number: parameters.projectNumber,
+      });
+      // @ts-expect-error
+      const project = data.userOrOrganization.projectV2;
+
+      console.log(data.userOrOrganization);
+
+      const projectData = {
+        title: project.title,
+        url: project.url,
+        fields: project.fields.nodes.reduce((fields, field) => {
+          if (!SUPPORTED_PROJECT_FIELD_TYPES.includes(field.dataType)) {
+            return fields;
+          }
+
+          function iterationToOption(iteration) {
+            return {
+              id: iteration.id,
+              name: iteration.id,
+              humanName: `${iteration.title} (${iteration.duration} days from ${iteration.startDate}))`,
+            };
+          }
+
+          return [
+            ...fields,
+            {
+              id: field.id,
+              name: field.name,
+              type: field.dataType,
+              options: field.options
+                ? field.options
+                : field.configuration
+                ? [
+                    ...field.configuration.iterations.map(iterationToOption),
+                    ...field.configuration.completedIterations.map(
+                      iterationToOption
+                    ),
+                  ]
+                : undefined,
+            },
+          ];
+        }, []),
+      };
+
+      return { ...projectData, token, user: await createStore("user").get() };
+    } catch (error) {
+      const message = error.errors ? error.errors[0].message : error.message;
+
+      throw new Error(message);
+    }
+  } catch (error) {
+    return redirect("/login");
+  }
+};
+
 export default function NewIssuePage() {
-  const { showBoundary } = useErrorBoundary();
   const { owner, repo, project_number: projectNumberString } = useParams();
 
   const parameters = {
@@ -120,129 +210,15 @@ export default function NewIssuePage() {
     projectNumber: Number(projectNumberString),
   };
 
-  const { authState, logout } = useContext(OctokitContext);
   const [isSubmittingIssue, setIsSubmittingIssue] = useState(false);
   const [submittedIssueUrl, setSubmittedIssueUrl] = useState("");
-  const [projectData, setProjectData] = useState(null);
   const [accessError, setAccessError] = useState(null);
   const navigate = useNavigate();
-
-  if (authState.type === "unauthenticated") {
-    navigate("/login");
-  }
+  const { title, url, fields, token, user } = useLoaderData();
 
   /**
    * @type {import("..").Store<import("..").StoreData>}
    */
-
-  const store =
-    process.env.NODE_ENV === "test"
-      ? DEFAULT_STORE
-      : createStore(location.pathname);
-
-  // load form data from local store or remotely
-  useEffect(
-    () => {
-      if (authState.type !== "authenticated") return;
-
-      store.get().then((data) => {
-        if (data) {
-          setProjectData(data);
-        }
-
-        authState.octokit
-          .graphql(VERIFY_ACCESS_QUERY, parameters)
-          .catch((error) => {
-            if (!error.response?.data?.data) {
-              showBoundary(error);
-              return;
-            }
-
-            return error.response.data.data;
-          })
-          .then((data) => {
-            const hasRepoAccess = Boolean(data?.repository);
-            const hasProjectReadAccess = Boolean(data?.owner?.project);
-            const hasProjectWriteAccess = Boolean(
-              data?.owner?.project?.viewerCanUpdate
-            );
-
-            const hasAccessError = !hasRepoAccess || !hasProjectWriteAccess;
-            const access = {
-              hasRepoAccess,
-              hasProjectReadAccess,
-              hasProjectWriteAccess,
-            };
-
-            if (hasAccessError) {
-              setAccessError(access);
-              return;
-            }
-
-            // Retrieve all project fields and single select options
-            return authState.octokit.graphql(GET_PROJECTS_WITH_ITEMS_QUERY, {
-              owner: parameters.owner,
-              number: parameters.projectNumber,
-            });
-          })
-          .then((data) => {
-            // @ts-expect-error
-            const project = data.userOrOrganization.projectV2;
-
-            const projectData = {
-              title: project.title,
-              url: project.url,
-              fields: project.fields.nodes.reduce((fields, field) => {
-                if (!SUPPORTED_PROJECT_FIELD_TYPES.includes(field.dataType)) {
-                  return fields;
-                }
-
-                function iterationToOption(iteration) {
-                  return {
-                    id: iteration.id,
-                    name: iteration.id,
-                    humanName: `${iteration.title} (${iteration.duration} days from ${iteration.startDate}))`,
-                  };
-                }
-
-                return [
-                  ...fields,
-                  {
-                    id: field.id,
-                    name: field.name,
-                    type: field.dataType,
-                    options: field.options
-                      ? field.options
-                      : field.configuration
-                      ? [
-                          ...field.configuration.iterations.map(
-                            iterationToOption
-                          ),
-                          ...field.configuration.completedIterations.map(
-                            iterationToOption
-                          ),
-                        ]
-                      : undefined,
-                  },
-                ];
-              }, []),
-            };
-
-            setProjectData(projectData);
-            return store.set(projectData);
-          })
-          .catch((error) => {
-            const message = error.errors
-              ? error.errors[0].message
-              : error.message;
-
-            showBoundary(Error(message));
-          });
-      });
-    },
-    // Note: adding `store` as dependency results in an infinite loop
-    [authState]
-  );
 
   if (accessError) {
     const { owner, repo, projectNumber } = parameters;
@@ -290,9 +266,9 @@ export default function NewIssuePage() {
               )}
             </ActionList.LeadingVisual>
             Read access to project{" "}
-            {projectData && (
-              <Link href={projectData.url}>
-                #{projectNumber} {projectData.title}
+            {url && (
+              <Link href={url}>
+                #{projectNumber} {title}
               </Link>
             )}
           </ActionList.Item>
@@ -313,9 +289,9 @@ export default function NewIssuePage() {
               )}
             </ActionList.LeadingVisual>
             Write access to project{" "}
-            {projectData && (
-              <Link href={projectData.url}>
-                #{projectNumber} {projectData.title}
+            {url && (
+              <Link href={url}>
+                #{projectNumber} {title}
               </Link>
             )}
           </ActionList.Item>
@@ -334,8 +310,10 @@ export default function NewIssuePage() {
     const { title, body, ...projectFields } = data;
 
     console.log("Creating issue ...");
+    const octokit = new Octokit({ auth: token });
+
     // Create the issue
-    const { data: issue } = await authState.octokit.request(
+    const { data: issue } = await octokit.request(
       "POST /repos/{owner}/{repo}/issues",
       {
         owner: owner,
@@ -355,7 +333,7 @@ export default function NewIssuePage() {
 
     // Add the issue to the project
     const project = new Project({
-      octokit: authState.octokit,
+      octokit,
       owner: owner,
       number: parameters.projectNumber,
       fields,
@@ -369,25 +347,16 @@ export default function NewIssuePage() {
       throw error;
     }
 
-    console.log("Issue added to project: %s", projectData?.url);
+    console.log("Issue added to project: %s", url);
 
     setSubmittedIssueUrl(issue.html_url);
-  }
-
-  if (!projectData) {
-    return (
-      <Box mt="4" display="flex" justifyContent="center">
-        <Spinner />
-      </Box>
-    );
   }
 
   return (
     <>
       <Nav
-        avatarUrl={authState.user?.avatar_url}
+        avatarUrl={user?.avatar_url}
         onLogout={() => {
-          logout();
           navigate("/login");
         }}
       />
@@ -412,8 +381,8 @@ export default function NewIssuePage() {
           </Breadcrumbs>
           <Heading sx={{ fontSize: 2 }}>
             Submit to project{" "}
-            <Link href={projectData?.url}>
-              #{parameters.projectNumber} {projectData?.title}
+            <Link href={url}>
+              #{parameters.projectNumber} {title}
             </Link>
           </Heading>
         </ContentWrapper>
@@ -421,7 +390,7 @@ export default function NewIssuePage() {
       <NewIssueForm
         onSubmit={onSubmit}
         submittedIssueUrl={submittedIssueUrl}
-        projectFields={projectData?.fields}
+        projectFields={fields}
         isSubmittingIssue={isSubmittingIssue}
       />
     </>

@@ -1,13 +1,65 @@
-//@ts-check
+// @ts-check
+import { redirect } from "react-router-dom";
+import { Octokit } from "@octokit-next/core";
+import createStore from "./lib/create-store";
 
-import { Outlet } from "react-router-dom";
-import createStore from "./lib/create-store.js";
-import { OctokitProvider } from "./components/octokit-provider.js";
+const backendBaseUrl = import.meta.env.VITE_BACKEND_BASE_URL || "";
+
+/**
+ * @param {string} code
+ * @returns Promise<string | null>
+ */
+async function getTokenFromCode(code, location) {
+  const response = await fetch(
+    `${backendBaseUrl || location.origin}/api/github/oauth/token`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ code }),
+    }
+  );
+  const responseBody = await response.json();
+  const { authentication } = responseBody;
+  // TODO - store authentication.refreshToken
+  return authentication.token;
+}
+
+/**
+ * @type {import("react-router-dom").LoaderFunction}
+ */
+export const loader = async ({ request }) => {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+
+  try {
+    let gitHubToken;
+
+    if (code) {
+      gitHubToken = await getTokenFromCode(code, url.pathname);
+    } else {
+      gitHubToken = await createStore("token").get();
+    }
+
+    if (!gitHubToken) {
+      throw new Error("No token");
+    }
+
+    const octokit = new Octokit({ auth: gitHubToken });
+    const { data: user } = await octokit.request("GET /user");
+    const { token } = await octokit.auth();
+
+    await createStore("token").set(token);
+    await createStore("user").set(user);
+
+    return redirect("/project-forms/demo/projects/1/issues/new");
+  } catch (error) {
+    await createStore("token").set(null);
+    return redirect("/login");
+  }
+};
 
 export default function App() {
-  return (
-    <OctokitProvider store={createStore("octokit-provider")}>
-      <Outlet />
-    </OctokitProvider>
-  );
+  return <p>Loading root...</p>;
 }
