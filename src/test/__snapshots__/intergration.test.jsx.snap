@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`App > /project-forms/demo/projects/1/issues/new?code=123 1`] = `
+exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > loaded 1`] = `
 <DocumentFragment>
   <div
     class="BaseStyles__Base-sc-nfjs56-0 kBCNKa"
@@ -206,6 +206,50 @@ exports[`App > /project-forms/demo/projects/1/issues/new?code=123 1`] = `
           </div>
         </div>
       </form>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > loading 1`] = `
+<DocumentFragment>
+  <div
+    class="BaseStyles__Base-sc-nfjs56-0 kBCNKa"
+    color="fg.default"
+    data-color-mode="light"
+    data-dark-theme="dark"
+    data-light-theme="light"
+    data-portal-root="true"
+    font-family="normal"
+  >
+    <div
+      class="Box-sc-g0xbh4-0 kmXFIz"
+      display="flex"
+    >
+      <svg
+        class="Spinner__StyledSpinner-sc-1knt686-0 hCeFqP"
+        fill="none"
+        height="32px"
+        viewBox="0 0 16 16"
+        width="32px"
+      >
+        <circle
+          cx="8"
+          cy="8"
+          r="7"
+          stroke="currentColor"
+          stroke-opacity="0.25"
+          stroke-width="2"
+          vector-effect="non-scaling-stroke"
+        />
+        <path
+          d="M15 8a7.002 7.002 0 00-7-7"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-width="2"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
     </div>
   </div>
 </DocumentFragment>

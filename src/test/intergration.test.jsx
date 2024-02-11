@@ -143,6 +143,8 @@ describe("App", () => {
 
     const { asFragment, getByText } = render(<Root />);
 
+    expect(asFragment()).toMatchSnapshot("loading");
+
     await waitFor(
       () => {
         const title = getByText(/My Project/);
@@ -151,6 +153,6 @@ describe("App", () => {
       { timeout: 1000 }
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot("loaded");
   });
 });
