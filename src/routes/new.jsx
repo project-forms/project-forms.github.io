@@ -176,7 +176,7 @@ export default function NewIssuePage() {
 
             if (hasAccessError) {
               setAccessError(access);
-              return;
+              throw new Error("Access error");
             }
 
             // Retrieve all project fields and single select options
@@ -232,6 +232,7 @@ export default function NewIssuePage() {
             return store.set(projectData);
           })
           .catch((error) => {
+            if (error.message === "Access error") return;
             const message = error.errors
               ? error.errors[0].message
               : error.message;
