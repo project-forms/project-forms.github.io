@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/vite-react/tsconfig.json",
   "compilerOptions": {
+    "checkJs": true
   },
   "include": ["src/**/*"]
 }
