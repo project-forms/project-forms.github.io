@@ -6,7 +6,6 @@
   "description": "A web app for forms generated based on GitHub projects",
   "scripts": {
     "test": "vitest",
-    "test:ci": "vitest run",
     "dev": "netlify dev",
     "vite:dev": "vite",
     "vite:build": "vite build",
