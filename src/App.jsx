@@ -34,12 +34,10 @@ export const loader = async ({ request }) => {
   const code = url.searchParams.get("code");
 
   try {
-    let gitHubToken;
+    let gitHubToken = await createStore("token").get();
 
-    if (code) {
+    if (!gitHubToken && code) {
       gitHubToken = await getTokenFromCode(code, url.pathname);
-    } else {
-      gitHubToken = await createStore("token").get();
     }
 
     if (!gitHubToken) {
