@@ -1,5 +1,3 @@
-// @ts-check
-
 import { BaseStyles, ThemeProvider } from "@primer/react";
 
 import RootRoute from "./routes/root.jsx";

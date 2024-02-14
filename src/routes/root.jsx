@@ -1,5 +1,3 @@
-// @ts-check
-
 import { useContext } from "react";
 import { Box, Spinner } from "@primer/react";
 import { OctokitContext } from "../components/octokit-provider.js";

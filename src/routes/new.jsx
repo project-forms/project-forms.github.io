@@ -1,4 +1,3 @@
-// @ts-check
 import { useState, useContext, useEffect } from "react";
 import {
   ActionList,

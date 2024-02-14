@@ -1,5 +1,3 @@
-// @ts-check
-
 import { Box, Button, StyledOcticon, Text } from "@primer/react";
 import { MarkGithubIcon, TableIcon } from "@primer/octicons-react";
 
