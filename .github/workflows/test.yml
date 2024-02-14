@@ -17,7 +17,7 @@ jobs:
           node-version: "lts/*"
           cache: npm
       - run: npm ci
-      - run: npm run test
+      - run: npm test
 
   e2e:
     runs-on: ubuntu-latest

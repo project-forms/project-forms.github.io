@@ -5,7 +5,7 @@
   "version": "0.0.0-development",
   "description": "A web app for forms generated based on GitHub projects",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest",
     "dev": "netlify dev",
     "vite:dev": "vite",
     "vite:build": "vite build",
