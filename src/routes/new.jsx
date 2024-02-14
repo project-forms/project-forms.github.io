@@ -185,6 +185,8 @@ export default function NewIssuePage() {
             });
           })
           .then((data) => {
+            if (!data) return;
+
             // @ts-expect-error
             const project = data.userOrOrganization.projectV2;
 
@@ -235,7 +237,7 @@ export default function NewIssuePage() {
               ? error.errors[0].message
               : error.message;
 
-            showBoundary(Error(message));
+            showBoundary(new Error(message));
           });
       });
     },

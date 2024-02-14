@@ -1,6 +1,163 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > loaded 1`] = `
+exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > renders error if the authenticated user has no access 1`] = `
+<DocumentFragment>
+  <div
+    class="BaseStyles__Base-sc-nfjs56-0 kBCNKa"
+    color="fg.default"
+    data-color-mode="light"
+    data-dark-theme="dark"
+    data-light-theme="light"
+    data-portal-root="true"
+    font-family="normal"
+  >
+    <div
+      class="Box-sc-g0xbh4-0 bwJfcd"
+    >
+      <h2
+        class="Heading__StyledHeading-sc-1c1dgg0-0 jftaKW"
+      >
+        Access Error
+      </h2>
+      <ul
+        class="List__ListBox-sc-1x7olzq-0 gAwGiF"
+      >
+        <li
+          aria-labelledby="react-aria-:r5:--label "
+          class="Item__LiBox-sc-yeql7o-0 kcAeBG"
+          id="react-aria-:r5:"
+          tabindex="0"
+        >
+          <span
+            class="Box-sc-g0xbh4-0 bgVeeG"
+          >
+            <svg
+              aria-hidden="true"
+              class="Octicon-sc-9kayk9-0 cGOZxm"
+              fill="currentColor"
+              focusable="false"
+              height="32"
+              role="img"
+              style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
+              viewBox="0 0 24 24"
+              width="32"
+            >
+              <path
+                d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12Zm16.28-2.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018l-5.97 5.97-2.47-2.47a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l3 3a.75.75 0 0 0 1.06 0Z"
+              />
+            </svg>
+          </span>
+          <div
+            class="Box-sc-g0xbh4-0 fFwzwX"
+            data-component="ActionList.Item--DividerContainer"
+          >
+            <span
+              class="Box-sc-g0xbh4-0 avjpQ"
+              id="react-aria-:r5:--label"
+            >
+              access to 
+              <a
+                class="Link__StyledLink-sc-14289xe-0 iCnTAO"
+                href="https://github.com/project-forms/demo"
+              >
+                project-forms/demo
+              </a>
+            </span>
+          </div>
+        </li>
+        <li
+          aria-labelledby="react-aria-:r6:--label "
+          class="Item__LiBox-sc-yeql7o-0 kcAeBG"
+          id="react-aria-:r6:"
+          tabindex="0"
+        >
+          <span
+            class="Box-sc-g0xbh4-0 bgVeeG"
+          >
+            <svg
+              aria-hidden="true"
+              class="Octicon-sc-9kayk9-0 cGOZxm"
+              fill="currentColor"
+              focusable="false"
+              height="32"
+              role="img"
+              style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
+              viewBox="0 0 24 24"
+              width="32"
+            >
+              <path
+                d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12Zm16.28-2.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018l-5.97 5.97-2.47-2.47a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l3 3a.75.75 0 0 0 1.06 0Z"
+              />
+            </svg>
+          </span>
+          <div
+            class="Box-sc-g0xbh4-0 fFwzwX"
+            data-component="ActionList.Item--DividerContainer"
+          >
+            <span
+              class="Box-sc-g0xbh4-0 avjpQ"
+              id="react-aria-:r6:--label"
+            >
+              Read access to project 
+              <a
+                class="Link__StyledLink-sc-14289xe-0 iCnTAO"
+                href="Project URL"
+              >
+                #1 My Project
+              </a>
+            </span>
+          </div>
+        </li>
+        <li
+          aria-labelledby="react-aria-:r7:--label "
+          class="Item__LiBox-sc-yeql7o-0 kcAeBG"
+          id="react-aria-:r7:"
+          tabindex="0"
+        >
+          <span
+            class="Box-sc-g0xbh4-0 bgVeeG"
+          >
+            <svg
+              aria-hidden="true"
+              class="Octicon-sc-9kayk9-0 eLsJQT"
+              fill="currentColor"
+              focusable="false"
+              height="32"
+              role="img"
+              style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible;"
+              viewBox="0 0 24 24"
+              width="32"
+            >
+              <path
+                d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12Zm8.036-4.024a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L10.939 12l-2.963 2.963a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L12 13.06l2.963 2.964a.75.75 0 0 0 1.061-1.06L13.061 12l2.963-2.964a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L12 10.939Z"
+              />
+            </svg>
+          </span>
+          <div
+            class="Box-sc-g0xbh4-0 fFwzwX"
+            data-component="ActionList.Item--DividerContainer"
+          >
+            <span
+              class="Box-sc-g0xbh4-0 avjpQ"
+              id="react-aria-:r7:--label"
+            >
+              Write access to project 
+              <a
+                class="Link__StyledLink-sc-14289xe-0 iCnTAO"
+                href="Project URL"
+              >
+                #1 My Project
+              </a>
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > renders the form successfully > loaded 1`] = `
 <DocumentFragment>
   <div
     class="BaseStyles__Base-sc-nfjs56-0 kBCNKa"
@@ -211,7 +368,7 @@ exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > loaded 1`] =
 </DocumentFragment>
 `;
 
-exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > loading 1`] = `
+exports[`App > /project-forms/demo/projects/1/issues/new?code=123 > renders the form successfully > loading 1`] = `
 <DocumentFragment>
   <div
     class="BaseStyles__Base-sc-nfjs56-0 kBCNKa"
